@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" >
+
     <title>Lab 1: The Artemis Board and Bluetooth</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
@@ -83,9 +84,10 @@
         header h1 {
             font-size: 2.8rem;
             margin-bottom: 10px;
-            color: #e03a4f;
+            color: #9ae6c4;
         }
-
+        
+        
         header p {
             color: var(--muted);
         }
@@ -102,13 +104,13 @@
         h2 {
             font-size: 1.75rem;
             margin: 0 0 14px;
-            color: #e03a4f;
+            color: #9ae6c4;
         }
 
         h3 {
             font-size: 1.3rem;
             margin: 0 0 12px;
-            color: #e03a4f;
+            color: #9ae6c4;
         }
 
         p {
@@ -126,6 +128,23 @@
 
         .subdued {
             color: var(--muted);
+        }
+
+        a.student-link {
+            color: #8de4b2;
+            text-decoration: none;
+            border-bottom: 1px solid rgba(141, 228, 178, 0.4);
+            transition: color 0.2s ease, border-color 0.2s ease;
+        }
+
+        a.student-link:hover {
+            color: #a6f0c7;
+            border-color: rgba(166, 240, 199, 0.7);
+        }
+
+        a.student-link:visited {
+            color: #8de4b2;
+            border-color: rgba(141, 228, 178, 0.4);
         }
 
         .gist {
@@ -204,6 +223,53 @@
             text-align: center;
         }
 
+        .media-img {
+            display: block;
+            max-width: 100%;
+            border-radius: 10px;
+            border: 1px solid #2d3642;
+            background: #0f1722;
+            padding: 6px;
+            margin: 8px 0 4px;
+        }
+
+        .video-embed {
+            width: 315px;
+            max-width: 100%;
+            height: 560px;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #2d3642;
+            background: #0f1722;
+            margin: 10px 0;
+        }
+
+        .video-embed iframe {
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+
+        .video-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 14px;
+            border-radius: 10px;
+            background: #0f1722;
+            border: 1px solid #2d3642;
+            color: #8de4b2;
+            text-decoration: none;
+            transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+            margin: 8px 0 4px;
+        }
+
+        .video-link:hover {
+            background: #152033;
+            border-color: #3a4a5d;
+            color: #a6f0c7;
+        }
+
         .gist-embed {
             margin: 18px 0;
         }
@@ -236,7 +302,7 @@
             border: 1px solid #1f2630;
             font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
             font-size: 0.95rem;
-            color: #9ae6c4;
+            color: #e03a4f;
             line-height: 1.3;
         }
 
@@ -279,12 +345,50 @@
         <section id="lab1a">
             <h2>Lab 1a</h2>
             <p>In section 1a, I set up the Arduino IDE and Artemis board. I installed the latest version of the Arduino IDE and the Sparkfun Apollo boards manager using the json link provided. After that, I ran the following four tasks to get comfortable with the IDE and board.</p>
-            <ul class="list-spaced">
-                <li><strong>Blink</strong> – (location) — explanation <span class="media-placeholder">[YOUTUBE VIDEO]</span></li>
-                <li><strong>Serial</strong> – (location) — explanation <span class="media-placeholder">[SERIAL MONITOR OUTPUT]</span></li>
-                <li><strong>Analog Read</strong> – (location) — explanation <span class="media-placeholder">[YOUTUBE VIDEO]</span></li>
-                <li><strong>Microphone Output</strong> – (location) — explanation <span class="media-placeholder">[YOUTUBE VIDEO]</span></li>
-            </ul>
+            <div >
+                <div>
+                    <div>
+                        <h3>Blink</h3>
+                        <span class="code-inline">/File/Examples/01.Basics</span>
+                        <div>explanation</div>
+                        <div class="video-embed">
+                            <iframe
+                            width="560"
+                            height="315"
+                            src="https://www.youtube.com/embed/_y7U-d1_q1c"
+                            title="YouTube video player"
+                            frameborder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowfullscreen>
+                          </iframe>
+                        </div>
+                    <div>
+                        <h3>Serial</h3>
+                        <span class="code-inline">/File/Examples/Apollo3/Example04_Serial</span>
+                        <div>explanation</div>
+                        <div class="media-placeholder">[SERIAL MONITOR OUTPUT]</div>
+                    </div>
+
+                    <div>
+                        <h3>Analog Read</h3>
+                        <span class="code-inline">/File/Examples/Apollo3/Example02_AnalogRead</span>
+                        <div>explanation</div>
+                        <div class="video-embed">
+                            <iframe width="560" height="315" src="https://www.youtube.com/embed/B_XJotRKHz8?si=Y2kmbgfKUYXoZqAk" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>                        
+                        </div>
+                    </div>
+                
+                    <div>
+                        <h3>Microphone Output</h3>
+                        <span class="code-inline">/File/Examples/PDM/Example1_MicrophoneOutput</span>
+                        <div>explanation</div>
+                        <div class="video-embed">
+                            <iframe width="560" height="315" src="https://www.youtube.com/embed/RtQRKVqfbWU?si=EROjyTg6zd_zQ-WT" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>                        
+                        </div>
+                    </div>
+                </div>
+                
+                
         </section>
         <hr class="section-divider">
 
@@ -311,7 +415,6 @@
                 <li>First, I made sure my python version was &lt;3.14 <span class="code-inline">python3 --version</span></li>
                 <li>I created a project folder and cd into it. <span class="code-inline">mkdir lab1 && cd lab1</span></li>
                 <li>Created the virtual environment and activated it <span class="code-inline">python3 -m venv .venv && source .venv/bin/activate</span></li>
-                <li>Installed necessary python packages <span class="code-inline">pip install -r requirements.txt</span></li>
                 <li>Unzipped the codebase into the virtual environment</li>
                 <li>Start the Jupyter Server, opens up a tab <span class="code-inline">jupyter notebook</span></li>
             </ul>
@@ -320,7 +423,8 @@
             <ul class="list-spaced">
                 <li>Installed the ArduinoBLE on ArduinoIDE</li>
                 <li>Load and burn the <span class="code-inline">ble_arduino.ino</span> onto board</li>
-                <li>MAC address now being printed <span class="media-placeholder">&lt;IMAGE&gt;</span></li>
+                <li>MAC address now being printed 
+                    <div><img class="media-img" src="media/lab1/macaddress.png" alt="MAC address output"></div></li>
             </ul>
         </section>
         <hr class="section-divider">
@@ -329,7 +433,7 @@
             <h2>Configurations</h2>
             <p>In order to get the connection with the board working, I needed to make some configurations.</p>
             <ul class="list-spaced">
-                <li>Updated the Artemis MAC address in <span class="code-inline">connections.yaml</span> <span class="media-placeholder">&lt;IMAGE&gt;</span></li>
+                <li>Updated the Artemis MAC address in <span class="code-inline">connections.yaml</span></li>
                 <li>Generated and updated a new BLEService UUID.</li>
             </ul>
 
@@ -344,7 +448,7 @@
                     <span class="lang-tag">Shell</span>
                 </div>
                 <div class="gist-body">
-                    <pre><code class="code-block"><span class="code-kw">python</span> -c <span class="code-str">"import uuid; print(uuid.uuid4())"</span></code></pre>
+                    <pre><code class="code-block"><span class="code-kw">python3</span> -c <span class="code-str">"import uuid; print(uuid.uuid4())"</span></code></pre>
                 </div>
             </div>
 
@@ -398,7 +502,7 @@ LOG.propagate <span class="code-op">=</span> <span class="code-kw">False</span><
             <div class="gist">
                 <div class="gist-header">
                     <span class="file-name">Arduino</span>
-                    <span class="lang-tag">C++</span>
+                    <span class="lang-tag">C</span>
                 </div>
                 <div class="gist-body"><pre><code class="code-block"><span class="code-kw">case</span> ECHO:
 
@@ -422,12 +526,18 @@ LOG.propagate <span class="code-op">=</span> <span class="code-kw">False</span><
             </div>
             <div class="gist">
                 <div class="gist-header">
-                    <span class="file-name">Notebook</span>
+                    <span class="file-name">Jupyter Notebook</span>
                     <span class="lang-tag">Python</span>
                 </div>
-                <div class="gist-body"><pre><code class="code-block">ble.send_command(CMD.ECHO, <span class="code-str">"Go Big Red!"</span>)</code></pre></div>
+                <div class="gist-body"><pre><code class="code-block">ble.send_command(CMD.ECHO, <span class="code-str">"Go Big Red!"</span>)
+s <span class="code-op">=</span> ble.receive_string(ble.uuid[<span class="code-str">'RX_STRING'</span>])
+<span class="code-fn">print</span>(s)</code></pre></div>
             </div>
-            <div class="media-placeholder">&lt;PICTURE OF TEXT&gt;</div>
+            <p><strong>Serial Monitor Output:</strong></p>
+            <div><img class="media-img" src="media/lab1/ECHO_arduino.png" alt="ECHO serial monitor output"></div>
+            <p><strong>Jupyter Notebook Output:</strong></p>
+            <div><img class="media-img" src="media/lab1/ECHO_notebook.png" alt="ECHO notebook output"></div>
+
         </section>
 
         <hr class="task-divider">
@@ -438,7 +548,7 @@ LOG.propagate <span class="code-op">=</span> <span class="code-kw">False</span><
             <div class="gist">
                 <div class="gist-header">
                     <span class="file-name">Arduino</span>
-                    <span class="lang-tag">C++</span>
+                    <span class="lang-tag">C</span>
                 </div>
                 <div class="gist-body"><pre><code class="code-block"><span class="code-kw">case</span> SEND_THREE_FLOATS:
     <span class="code-kw">float</span> float_a, float_b, float_c;
@@ -467,12 +577,13 @@ LOG.propagate <span class="code-op">=</span> <span class="code-kw">False</span><
             </div>
             <div class="gist">
                 <div class="gist-header">
-                    <span class="file-name">Notebook</span>
+                    <span class="file-name">Jupyter Notebook</span>
                     <span class="lang-tag">Python</span>
                 </div>
                 <div class="gist-body"><pre><code class="code-block">ble.send_command(CMD.SEND_THREE_FLOATS, <span class="code-str">".5|.3|.2"</span>)</code></pre></div>
             </div>
-            <div class="media-placeholder">&lt;PICTURE OF TEXT&gt;</div>
+            <p><strong>Serial Monitor Output:</strong></p>
+            <div><img class="media-img" src="media/lab1/THREE_FLOATS_arduino.png" alt="Three floats serial output"></div>
         </section>
 
         <hr class="task-divider">
@@ -483,7 +594,7 @@ LOG.propagate <span class="code-op">=</span> <span class="code-kw">False</span><
             <div class="gist">
                 <div class="gist-header">
                     <span class="file-name">Arduino</span>
-                    <span class="lang-tag">C++</span>
+                    <span class="lang-tag">C</span>
                 </div>
                 <div class="gist-body"><pre><code class="code-block"><span class="code-kw">case</span> GET_TIME_MILLIS:            
     tx_estring_value.clear();
@@ -495,25 +606,26 @@ LOG.propagate <span class="code-op">=</span> <span class="code-kw">False</span><
             </div>
             <div class="gist">
                 <div class="gist-header">
-                    <span class="file-name">Notebook</span>
+                    <span class="file-name">Jupyter Notebook</span>
                     <span class="lang-tag">Python</span>
                 </div>
                 <div class="gist-body"><pre><code class="code-block">ble.send_command(CMD.GET_TIME_MILLIS, <span class="code-str">""</span>)
 s <span class="code-op">=</span> ble.receive_string(ble.uuid[<span class="code-str">'RX_STRING'</span>])
 <span class="code-fn">print</span>(s)</code></pre></div>
             </div>
-            
+            <p><strong>Jupyter Notebook Output:</strong></p>
+            <div><img class="media-img" src="media/lab1/GET_TIME_MILLIS_notebook.png" alt="Get time millis notebook output"></div>
         </section>
 
         <hr class="task-divider">
 
         <section id="task4">
             <h3>Task 4: Notification Handler for GET_TIME_MILLIS</h3>
-            <p>This task builds upon task 3. A notification handler has two arguments, the UUID of the sender, which in this case is <span class="code-inline">ble.uuid['RX_STRING']</span>, and the data in the characteristic. For this task, the notification handler function converts the data from a byte array to a string. We then extract the string with simple python string slicing.</p>
+            <p>This task builds upon task 3. A notification handler has two arguments, the UUID of the sender, which in this case is <span class="code-inline">ble.uuid['RX_STRING']</span>, and the data in the characteristic, which is a bytearray. The notification handler function converts the data from a byte array to a string. We then extract the string with simple python string slicing.</p>
             
             <div class="gist">
                 <div class="gist-header">
-                    <span class="file-name">Notebook</span>
+                    <span class="file-name">Jupyter Notebook</span>
                     <span class="lang-tag">Python</span>
                 </div>
                 <div class="gist-body"><pre><code class="code-block"><span class="code-kw">def</span> notification_handler(sender_uuid, data):
@@ -525,49 +637,58 @@ ble.start_notify(ble.uuid[<span class="code-str">'RX_STRING'</span>], notificati
 
 ble.send_command(CMD.GET_TIME_MILLIS, <span class="code-str">""</span>)</code></pre></div>
             </div>
-            <div class="media-placeholder">&lt;PICTURE&gt;</div>
+            <p><strong>Jupyter Notebook Output:</strong></p>
+            <div><img class="media-img" src="media/lab1/millis_notifs_notebook.png" alt="GET_TIME_MILLIS notifications output"></div>
         </section>
 
         <hr class="task-divider">
 
         <section id="task5">
             <h3>Task 5: GET_TIME_MILLIS Loop</h3>
-            <p>For this task, after calling the start_notify function, I call the GET_TIME_MILLIS command 20 times with a loop. EXPLANATION OF RATE HERE.</p>
+            <p>For this task, I called the <span class="code-inline">GET_TIME_MILLIS</span> command 100 times. Then, I noted the initial and final timestamp. As seen in the notebook output, the initial time stamp was <span class="code-inline">1416412</span>, and the final time stamp was <span class="code-inline">1422340</span>. Each message contains 9 characters, including the <span class="code-inline">"T:"</span>. Each character is 1 byte, so each message is 9 bytes. Therefore, there were 900 bytes of data sent over 1422340 - 1416412 = 5928ms. With a simple ratio calculation, the rate is ~150 bytes/sec.</p>
             <div class="gist">
                 <div class="gist-header">
-                    <span class="file-name">Notebook</span>
+                    <span class="file-name">Jupyter Notebook</span>
                     <span class="lang-tag">Python</span>
                 </div>
-                <div class="gist-body"><pre><code class="code-block"><span class="code-kw">def</span> handler(uuid, data):
-    <span class="code-fn">print</span>(<span class="code-str">"notify:"</span>, ble.bytearray_to_string(data))
+                <div class="gist-body"><pre><code class="code-block"><span class="code-kw">def</span> notification_handler(sender_uuid, data):
+    decoded <span class="code-op">=</span> ble.bytearray_to_string(data)
+    <span class="code-fn">print</span>(decoded)
 
-ble.start_notify(ble.uuid(<span class="code-str">'RX_STRING'</span>), handler)
 
-<span class="code-kw">for</span> _ <span class="code-kw">in</span> <span class="code-fn">range</span>(<span class="code-num">20</span>):
-    ble.send_command(CMD.GET_TIME_MILLIS, <span class="code-str">""</span>)
-    time.sleep(<span class="code-num">0.1</span>)</code></pre></div>
+ble.start_notify(ble.uuid[<span class="code-str">'RX_STRING'</span>], notification_handler)
+<span class="code-fn">print</span>(<span class="code-str">"Starting notifications and loop..."</span>)
+
+<span class="code-kw">for</span> i <span class="code-kw">in</span> <span class="code-fn">range</span>(<span class="code-num">100</span>):
+    <span class="code-kw">if</span> i <span class="code-op">==</span> <span class="code-num">0</span>:
+        <span class="code-fn">print</span>(<span class="code-str">"Initial timestamp: "</span>)
+    <span class="code-kw">if</span> i <span class="code-op">==</span> <span class="code-num">99</span>:
+        <span class="code-fn">print</span>(<span class="code-str">"Final timestamp: "</span>)
+    ble.send_command(CMD.GET_TIME_MILLIS, <span class="code-str">""</span>)</code></pre></div>
             </div>
-            <div class="media-placeholder">&lt;OUTPUT IMAGE&gt;</div>
+            <p><strong>Jupyter Notebook Output:</strong></p>
+            <div><img class="media-img" src="media/lab1/millis_initial_time.png" alt="Initial timestamp output from notebook"></div>
+            <div><img class="media-img" src="media/lab1/millis_final_time.png" alt="Final timestamp output from notebook"></div>
         </section>
 
         <hr class="task-divider">
 
         <section id="task6">
             <h3>Task 6: SEND_TIME_DATA</h3>
-            <p>First, I added the <span class="code-inline">SEND_TIME_DATA</span> command to <span class="code-inline">cmd_types.py</span> in the Jupyter server and in the enum in the arduino code. Then, I implemented the <span class="code-inline">SEND_TIME_DATA</span> case in the arduino code. There is a <span class="code-inline">timestamp_arr</span> variable of size 20 at the top of <span class="code-inline">ble_arduino.ino</span> which I use in the implementation. On the Jupyter code side, I wrote a new notification handler that prints the timestamp. After I call the <span class="code-inline">start_notify</span> and send the <span class="code-inline">SEND_TIME_DATA</span> command to the board, we count the number of timestamps returned to ensure it is 20, and it is.</p>
+            <p>First, I added the <span class="code-inline">SEND_TIME_DATA</span> command to <span class="code-inline">cmd_types.py</span> in the Jupyter server and in the enum in the arduino code. Then, I implemented the <span class="code-inline">SEND_TIME_DATA</span> case in the arduino code. There is a <span class="code-inline">timestamp_arr</span> variable of size 100 at the top of <span class="code-inline">ble_arduino.ino</span> which I use in the implementation. On the Jupyter code side, I wrote a new notification handler that prints the timestamp. After I call the <span class="code-inline">start_notify</span> and send the <span class="code-inline">SEND_TIME_DATA</span> command to the board, we count the number of timestamps returned to ensure it is 100, and it is.</p>
             
             <div class="gist">
                 <div class="gist-header">
                     <span class="file-name">Arduino</span>
-                    <span class="lang-tag">C++</span>
+                    <span class="lang-tag">C</span>
                 </div>
                 <div class="gist-body"><pre><code class="code-block"><span class="code-kw">case</span> SEND_TIME_DATA:
 
-    <span class="code-kw">for</span> (<span class="code-kw">int</span> i <span class="code-op">=</span> <span class="code-num">0</span>; i <span class="code-op">&lt;</span> <span class="code-num">20</span>; i<span class="code-op">++</span>) {
+    <span class="code-kw">for</span> (<span class="code-kw">int</span> i <span class="code-op">=</span> <span class="code-num">0</span>; i <span class="code-op">&lt;</span> <span class="code-num">100</span>; i<span class="code-op">++</span>) {
         timestamp_arr[i] <span class="code-op">=</span> <span class="code-kw">int</span>(millis());
     }
 
-    <span class="code-kw">for</span> (<span class="code-kw">int</span> j <span class="code-op">=</span> <span class="code-num">0</span>; j <span class="code-op">&lt;</span> <span class="code-num">20</span>; j<span class="code-op">++</span>) {
+    <span class="code-kw">for</span> (<span class="code-kw">int</span> j <span class="code-op">=</span> <span class="code-num">0</span>; j <span class="code-op">&lt;</span> <span class="code-num">100</span>; j<span class="code-op">++</span>) {
         tx_estring_value.clear();
         tx_estring_value.append(<span class="code-str">"T:"</span>);
         tx_estring_value.append(timestamp_arr[j]);
@@ -578,7 +699,7 @@ ble.start_notify(ble.uuid(<span class="code-str">'RX_STRING'</span>), handler)
             </div>
             <div class="gist">
                 <div class="gist-header">
-                    <span class="file-name">Notebook</span>
+                    <span class="file-name">Jupyter Notebook</span>
                     <span class="lang-tag">Python</span>
                 </div>
                 <div class="gist-body"><pre><code class="code-block"><span class="code-kw">def</span> time_notification_handler(sender_uuid, data):
@@ -588,33 +709,37 @@ ble.start_notify(ble.uuid(<span class="code-str">'RX_STRING'</span>), handler)
 ble.start_notify(ble.uuid[<span class="code-str">'RX_STRING'</span>], time_notification_handler)
 ble.send_command(CMD.SEND_TIME_DATA, <span class="code-str">""</span>);</code></pre></div>
             </div>
-            <div class="media-placeholder">&lt;IMAGE&gt;</div>
+            <p><strong>Jupyter Notebook Output:</strong></p>
+            <p>There were 100 total messages in the output, but it was too long to paste all of it.</p>
+            <div><img class="media-img" src="media/lab1/SEND_TIME_DATA_initial.png" alt="SEND_TIME_DATA initial timestamp output"></div>
+            <p>The final timestamp was: </p>
+            <div><img class="media-img" src="media/lab1/SEND_TIME_DATA_final.png" alt="SEND_TIME_DATA final timestamp output"></div>
         </section>
 
         <hr class="task-divider">
 
         <section id="task7">
             <h3>Task 7: GET_TEMP_READINGS</h3>
-            <p>For this task, I introduced a new array of the same size as <span class="code-inline">timestamps_arr</span>, 20. Similarly to before, I added the command to <span class="code-inline">cmd_types.py</span> and the enum in the arduino code. I added a global variable, <span class="code-inline">temps_arr</span> to reference in the command’s implementation. This command is very similar to <span class="code-inline">SEND_TIME_STAMPS</span>, but I add additional temperature information, which I get using the <span class="code-inline">getTempDegF()</span> function. After burning the updated code onto the board, I wrote a notification handler that prints timestamp and temperature info. On the Jupyter code, I call <span class="code-inline">start_notify</span>, then call the command 20 times in a loop.</p>
+            <p>For this task, I introduced a new array of the same size as <span class="code-inline">timestamps_arr</span>, 100. Similarly to before, I added the command to <span class="code-inline">cmd_types.py</span> and the enum in the arduino code. I added a global variable, <span class="code-inline">temps_arr</span> to reference in the command’s implementation. This command is very similar to <span class="code-inline">SEND_TIME_STAMPS</span>, but I add additional temperature information, which I get using the <span class="code-inline">getTempDegF()</span> function. I found this function looking in the Apollo3 AnalogRead example on ArduinoIDE. After burning the updated code onto the board, I wrote a notification handler that prints timestamp and temperature info. On the Jupyter code, I call <span class="code-inline">start_notify</span>, then call the command 100 times in a loop.</p>
             
             
             <div class="gist">
                 <div class="gist-header">
                     <span class="file-name">Arduino</span>
-                    <span class="lang-tag">C++</span>
+                    <span class="lang-tag">C</span>
                 </div>
                 <div class="gist-body"><pre><code class="code-block"><span class="code-kw">case</span> GET_TEMP_READINGS:
 
-    <span class="code-kw">for</span> (<span class="code-kw">int</span> i <span class="code-op">=</span> <span class="code-num">0</span>; i <span class="code-op">&lt;</span> <span class="code-num">20</span>; i<span class="code-op">++</span>) {
+    <span class="code-kw">for</span> (<span class="code-kw">int</span> i <span class="code-op">=</span> <span class="code-num">0</span>; i <span class="code-op">&lt;</span> <span class="code-num">100</span>; i<span class="code-op">++</span>) {
         timestamp_arr[i] <span class="code-op">=</span> <span class="code-kw">int</span>(millis());
         temps_arr[i] <span class="code-op">=</span> getTempDegF();
     }
 
-    <span class="code-kw">for</span> (<span class="code-kw">int</span> j <span class="code-op">=</span> <span class="code-num">0</span>; j <span class="code-op">&lt;</span> <span class="code-num">20</span>; j<span class="code-op">++</span>) {
+    <span class="code-kw">for</span> (<span class="code-kw">int</span> j <span class="code-op">=</span> <span class="code-num">0</span>; j <span class="code-op">&lt;</span> <span class="code-num">100</span>; j<span class="code-op">++</span>) {
         tx_estring_value.clear();
         tx_estring_value.append(<span class="code-str">"T:"</span>);
         tx_estring_value.append(timestamp_arr[j]);
-        tx_estring_value.append(<span class="code-str">"F:"</span>);   
+        tx_estring_value.append(<span class="code-str">" F:"</span>);   
         tx_estring_value.append(temps_arr[j]);
         tx_characteristic_string.writeValue(tx_estring_value.c_str()); 
     }
@@ -622,7 +747,7 @@ ble.send_command(CMD.SEND_TIME_DATA, <span class="code-str">""</span>);</code></
             </div>
             <div class="gist">
                 <div class="gist-header">
-                    <span class="file-name">Notebook</span>
+                    <span class="file-name">Jupyter Notebook</span>
                     <span class="lang-tag">Python</span>
                 </div>
                 <div class="gist-body"><pre><code class="code-block"><span class="code-kw">def</span> time_and_temps_notification_handler(sender_uuid, data):
@@ -632,14 +757,38 @@ ble.send_command(CMD.SEND_TIME_DATA, <span class="code-str">""</span>);</code></
 ble.start_notify(ble.uuid[<span class="code-str">'RX_STRING'</span>], time_and_temps_notification_handler)
 ble.send_command(CMD.GET_TEMP_READINGS, <span class="code-str">""</span>)</code></pre></div>
             </div>
-            <div class="media-placeholder">&lt;IMAGE&gt;</div>
+            <p><strong>Jupyter Notebook Output:</strong></p>
+            <p>Note, the complete output was cutoff!</p>
+            <div><img class="media-img" src="media/lab1/GET_TEMP_READINGS_notebook.png" alt="GET_TEMP_READINGS notebook output"></div>
         </section>
 
+        <hr class="task-divider">
+
+
         <section id="task8">
-            <h3>Task 8</h3>
-            <p>EXPLANATION HERE</p>
-            <p>DISCUSSION HERE</p>
+            <h3>Task 8: Analysis of Methods</h3>
+            <p>During this lab, I used two different methods of sending and receiving data from the board. The first method continuously calls the <span class="code-inline">GET_TIME_MILLIS</span> command in a loop. As we saw in task 5, we were able to send <span class="code-inline">100</span> timestamps over <span class="code-inline">~6000 ms</span>, or <span class="code-inline">6 seconds</span>. The other method was collecting data on the board, then sending it by looping through the stored data in an array. This method used no loop on the client side. Looking at the Task 6 images, the initial timestamp was <span class="code-inline">189033 ms</span>, and the final timestamp was <span class="code-inline">189035 ms</span>. We were able to receive <span class="code-inline">100</span> messages in <span class="code-inline">2 ms</span>. This is substantially more messages per second received than the first method. Method 1 would be a better option for streaming in data over a longer period of time. Method 2 would be better for precise information, which would be better suited for controlling a robot through feedback, since more information from sensors will be received over less time.</p>
+            <p>The Artemis board has <span class="code-inline">384 kB</span> of RAM. The ArduinoIDE shows that global variables take up <span class="code-inline">30952 bytes</span> of memory, which leaves us with <span class="code-inline">353048 bytes</span>. If we are considering a data point to simply be a timestamp and temperature point (<span class="code-inline">getTempDegF()</span> call), both as ints, a single data point is <span class="code-inline">4 + 4 = 8 bytes</span>. <span class="code-inline">353048 / 8 = 44131</span>. Therefore, we can store a total of <span class="code-inline">44,131</span> data points before the board runs out of memory.</p>
         </section>
+
+        <hr class="section-divider">
+
+        <section id="discussion">
+            <h3>Discussion</h3>
+            <p>During this lab, I worked on setting up my workspace and connecting my laptop and the Artemis board through bluetooth. I learned about how BLE works, especially how data is sent and accessed through different characteristics. I got comfortable uploading code to the board through the ArduinoIDE, interacting with the code through Jupyter Lab, and debugging with the Serial Monitor.</p>
+            <p>The most challenging part of the lab was understanding how to write the notification handler functions used by the <span class="code-inline">start_notify()</span> function. It also took me some time to figure out how I was going to calculate the rate of messages sent.</p>
+            <p>During debugging, I ran into several issues but was able to resolve them. I didn’t order my command cases the same as my enums, which caused problems. The <span class="code-inline">stop_notify()</span> function had to be called every time I called a <span class="code-inline">start_notify()</span>, or else I’d get errors.</p>
+        </section>
+
+        <hr class="section-divider">
+
+        <section id="collaboration">
+            <h3>Collaboration</h3>
+            <p>For this lab, I referenced two student pages, <a class="student-link" href="https://correial.github.io/LuccaFastRobots/" target="_blank" rel="noopener">Lucca Correia</a> and <a class="student-link" href="https://rga47-lab.github.io/" target="_blank" rel="noopener">Rachel Arena</a>, for help with <span class="code-inline">SEND_TIME_DATA</span> and specific parts of the code. I also used ChatGPT to help style my entire website, making sure my code and explanations were displayed properly.</p>
+        </section>
+
+        <hr class="section-divider">
+
     </main>
 </body>
 </html>
