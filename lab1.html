@@ -394,7 +394,7 @@
 
         <section id="lab1b">
             <h2>Lab 1b</h2>
-            <p>In section 1b, I establish a connection between my laptop and the board with the Bluetooth Stack. To prepare for this section, I read this explanation of Bluetooth Low Energy (BLE).</p>
+            <p>In section 1b, I establish a connection between my laptop and the board with the Bluetooth Stack. To prepare for this section, I read <a class="student-link" href="https://docs.arduino.cc/libraries/arduinoble/" target="_blank" rel="noopener">this explanation of Bluetooth Low Energy (BLE)</a>.</p>
 
             <h3>A Quick Summary of BLE</h3>
             <p>Bluetooth Low Energy (BLE) is optimized for low power and low data rate. A BLE radio acts like a “community bulletin board”. Any computer that connects to the board is like a community member reading the bulletin board.</p>
@@ -645,7 +645,7 @@ ble.send_command(CMD.GET_TIME_MILLIS, <span class="code-str">""</span>)</code></
 
         <section id="task5">
             <h3>Task 5: GET_TIME_MILLIS Loop</h3>
-            <p>For this task, I called the <span class="code-inline">GET_TIME_MILLIS</span> command 100 times. Then, I noted the initial and final timestamp. As seen in the notebook output, the initial time stamp was <span class="code-inline">1416412</span>, and the final time stamp was <span class="code-inline">1422340</span>. Each message contains 9 characters, including the <span class="code-inline">"T:"</span>. Each character is 1 byte, so each message is 9 bytes. Therefore, there were 900 bytes of data sent over 1422340 - 1416412 = 5928ms. With a simple ratio calculation, the rate is ~150 bytes/sec.</p>
+            <p>For this task, I called the <span class="code-inline">GET_TIME_MILLIS</span> command 100 times. Then, I noted the initial and final timestamp. As seen in the notebook output, the initial time stamp was <span class="code-inline">1416412</span>, and the final time stamp was <span class="code-inline">1422340</span>. Each message contains 9 characters, including the <span class="code-inline">"T:"</span>. Each character is 1 byte, so each message is 9 bytes. Therefore, there were 900 bytes of data sent over <span class="code-inline">1422340 - 1416412 = 5928ms</span>. With a simple ratio calculation, the rate is <span class="code-inline">~150 bytes/sec</span>.</p>
             <div class="gist">
                 <div class="gist-header">
                     <span class="file-name">Jupyter Notebook</span>
@@ -675,7 +675,7 @@ ble.start_notify(ble.uuid[<span class="code-str">'RX_STRING'</span>], notificati
 
         <section id="task6">
             <h3>Task 6: SEND_TIME_DATA</h3>
-            <p>First, I added the <span class="code-inline">SEND_TIME_DATA</span> command to <span class="code-inline">cmd_types.py</span> in the Jupyter server and in the enum in the arduino code. Then, I implemented the <span class="code-inline">SEND_TIME_DATA</span> case in the arduino code. There is a <span class="code-inline">timestamp_arr</span> variable of size 100 at the top of <span class="code-inline">ble_arduino.ino</span> which I use in the implementation. On the Jupyter code side, I wrote a new notification handler that prints the timestamp. After I call the <span class="code-inline">start_notify</span> and send the <span class="code-inline">SEND_TIME_DATA</span> command to the board, we count the number of timestamps returned to ensure it is 100, and it is.</p>
+            <p>First, I added the <span class="code-inline">SEND_TIME_DATA</span> command to <span class="code-inline">cmd_types.py</span> in the Jupyter server and in the enum in the arduino code. Then, I implemented the <span class="code-inline">SEND_TIME_DATA</span> case in the arduino code. There is a global <span class="code-inline">timestamp_arr</span> variable of size 100 at the top of <span class="code-inline">ble_arduino.ino</span> which I use in the implementation. On the Jupyter code side, I wrote a new notification handler that prints the timestamp. After I call the <span class="code-inline">start_notify</span> and send the <span class="code-inline">SEND_TIME_DATA</span> command to the board, we count the number of timestamps returned to ensure it is 100, and it is.</p>
             
             <div class="gist">
                 <div class="gist-header">
@@ -720,7 +720,7 @@ ble.send_command(CMD.SEND_TIME_DATA, <span class="code-str">""</span>);</code></
 
         <section id="task7">
             <h3>Task 7: GET_TEMP_READINGS</h3>
-            <p>For this task, I introduced a new array of the same size as <span class="code-inline">timestamps_arr</span>, 100. Similarly to before, I added the command to <span class="code-inline">cmd_types.py</span> and the enum in the arduino code. I added a global variable, <span class="code-inline">temps_arr</span> to reference in the command’s implementation. This command is very similar to <span class="code-inline">SEND_TIME_STAMPS</span>, but I add additional temperature information, which I get using the <span class="code-inline">getTempDegF()</span> function. I found this function looking in the Apollo3 AnalogRead example on ArduinoIDE. After burning the updated code onto the board, I wrote a notification handler that prints timestamp and temperature info. On the Jupyter code, I call <span class="code-inline">start_notify</span>, then call the command 100 times in a loop.</p>
+            <p>For this task, I introduced a new array of the same size as <span class="code-inline">timestamp_arr</span>, 100. Similarly to before, I added the command to <span class="code-inline">cmd_types.py</span> and the enum in the arduino code. I added a global variable, <span class="code-inline">temps_arr</span> to reference in the command’s implementation. This command is very similar to <span class="code-inline">SEND_TIME_STAMPS</span>, but I add additional temperature information, which I get using the <span class="code-inline">getTempDegF()</span> function. I found this function looking in the Apollo3 AnalogRead example on ArduinoIDE. After burning the updated code onto the board, I wrote a notification handler that prints timestamp and temperature info. On the Jupyter code, I call <span class="code-inline">start_notify</span>, then call the command 100 times in a loop.</p>
             
             
             <div class="gist">
