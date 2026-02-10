@@ -1034,7 +1034,7 @@ g_pitch <span class="code-op">+=</span> myICM.<span class="code-fn">gyrX</span>(
 <span class="code-kw">float</span> cf_pitch_arr[DATAPOINTS];</code></pre>
                 </div>
             </div>
-            <p>Each of these arrays stores floats. I decided to use floats over any other datatype because I will be able to store pretty accurate readings. A double is 8 bytes, while a float is only 4, and the level of accuracy is negligible. One datapoint consists of 10 floats, so that gives us 10 * 4 bytes = 40 bytes per datapoint.</p>
+            <p>Each of these arrays stores floats. I decided to use floats over any other datatype because I will be able to store pretty accurate readings without taking up so many bytes. A double is 8 bytes, while a float is only 4, and the level of accuracy is negligible. One datapoint consists of 10 floats, so that gives us 10 * 4 bytes = 40 bytes per datapoint.</p>
             <img class="media-img" src="media/lab2/remaining.png" alt="Remaining memory on Artemis board">
             <p>There are 246520 bytes of space left, therefore we can store <span class="code-inline">246520 / 40 = 6163</span> data points.</p>
             <img class="media-img" src="media/lab2/avg_time_diff.png" alt="Average time difference between samples">
