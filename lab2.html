@@ -411,7 +411,8 @@
                 <li>Connected the IMU to the Artemis board with QWIIC cables.</li>
                 <li>Ran <span class="code-inline">examples/Arduino/Example1_Basics</span> from the library to confirm comms.</li>
             </ul>
-            <strong>AD0_VAL:</strong> describe here whether AD0 is pulled high/low and resulting I2C address (0x68 or 0x69) to match the sketch config.
+            <strong>AD0_VAL:</strong> 
+            <p>The AD0_VAL represents the last bit of the I^2C address. It is set as 1 by default, but if the ADR is closed, it will have to be set to 0.</p>
            
             <div style="margin-bottom: 28px;"></div>
 
@@ -957,7 +958,7 @@ g_pitch <span class="code-op">+=</span> myICM.<span class="code-fn">gyrX</span>(
     roll_gyro[x]  <span class="code-op">=</span> g_roll;
     pitch_gyro[x] <span class="code-op">=</span> g_pitch;
     yaw_gyro[x]   <span class="code-op">=</span> g_yaw;
-
+x
     cf_pitch <span class="code-op">=</span> alpha <span class="code-op">*</span> (cf_pitch <span class="code-op">+</span> g_pitch <span class="code-op">*</span> dt) <span class="code-op">*</span> (<span class="code-num">1.0</span> <span class="code-op">-</span> alpha) <span class="code-op">+</span> lpf_pitch;
     cf_roll <span class="code-op">=</span> alpha <span class="code-op">*</span> (cf_roll <span class="code-op">+</span> g_roll <span class="code-op">*</span> dt) <span class="code-op">*</span> (<span class="code-num">1.0</span> <span class="code-op">-</span> alpha) <span class="code-op">+</span> lpf_roll;
 
