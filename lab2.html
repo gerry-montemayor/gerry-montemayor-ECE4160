@@ -1008,7 +1008,9 @@ g_pitch <span class="code-op">+=</span> myICM.<span class="code-fn">gyrX</span>(
             <hr class="task-divider">
 
             <h3>Data Storage</h3>
-            <p>It made sense to store accelerometer and gyroscope data in separate arrays to make data handling easier. In total, there were actually 11 different arrays for storing data. This makes it easier to easily choose which sensor data I want to work with in the code.</p>
+            <p>Below is an example of what my csvs looked like, each column is a different sensor measurement.</p>
+            <img class="media-img" src="media/lab2/timestamped.png" alt="Example CSV with timestamped sensor data">
+            <p>It made sense to store accelerometer and gyroscope data in separate arrays to make data handling easier. In total, there were actually 10 different arrays for storing data. This makes it easier to easily choose which sensor data I want to work with in the code.</p>
             <div class="gist">
                 <div class="gist-header">
                     <span class="file-name">
@@ -1029,15 +1031,14 @@ g_pitch <span class="code-op">+=</span> myICM.<span class="code-fn">gyrX</span>(
 <span class="code-kw">float</span> pitch_gyro[DATAPOINTS];
 <span class="code-kw">float</span> yaw_gyro[DATAPOINTS];
 <span class="code-kw">float</span> cf_roll_arr[DATAPOINTS];
-<span class="code-kw">float</span> cf_pitch_arr[DATAPOINTS];
-<span class="code-kw">float</span> cf_yaw_arr[DATAPOINTS];</code></pre>
+<span class="code-kw">float</span> cf_pitch_arr[DATAPOINTS];</code></pre>
                 </div>
             </div>
-            <p>Each of these arrays stores floats. I decided to use floats over any other datatype because I will be able to store pretty accurate readings. A double is 8 bytes, while a float is only 4, and the level of accuracy is negligible. One datapoint consists of 11 floats, so that gives us 11 * 4 bytes = 44 bytes per datapoint.</p>
+            <p>Each of these arrays stores floats. I decided to use floats over any other datatype because I will be able to store pretty accurate readings. A double is 8 bytes, while a float is only 4, and the level of accuracy is negligible. One datapoint consists of 10 floats, so that gives us 10 * 4 bytes = 40 bytes per datapoint.</p>
             <img class="media-img" src="media/lab2/remaining.png" alt="Remaining memory on Artemis board">
-            <p>There are 246520 bytes of space left, therefore we can store <span class="code-inline">246520 / 44 = 5602</span> data points.</p>
+            <p>There are 246520 bytes of space left, therefore we can store <span class="code-inline">246520 / 40 = 6163</span> data points.</p>
             <img class="media-img" src="media/lab2/avg_time_diff.png" alt="Average time difference between samples">
-            <p><span class="code-inline">3 * 5602 = 16806 / 1000 = 16.806</span> seconds of data collection!</p>
+            <p><span class="code-inline">3 * 6163 = 18489 / 1000 = 18.489</span> seconds of data collection!</p>
         </section>
 
         <hr class="section-divider">
@@ -1056,13 +1057,15 @@ g_pitch <span class="code-op">+=</span> myICM.<span class="code-fn">gyrX</span>(
             <div class="video-embed">
                 <iframe width="560" height="315" src="https://www.youtube.com/embed/-vECAm-FQXE?si=OnzS_QBRQP_q16XY" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
             </div>
+            <h3>Observations</h3>
+            <p>The car can accelerate very quickly and can turn really sharply if its not moving. If it is moving, the turns are a lot longer. If I tried to reverse the direction when the car was moving fast, it would flip over. Also, the battery only lasted about 10 minutes.</p>
         </section>
 
         <hr class="section-divider">
 
         <section id="collaboration">
             <h2>Collaboration</h2>
-            <p>During this project I referenced Lucca Correia's page for guidance with filter implementation and data storage strategies. At first, I did my low pass filtering in the python code, but then decided against it. I referenced Lucca's page for ideas for how to implement the filter and store my data effectively. I also was confused about how to speed up the main loop, and was able to understand how to do that better with his page.</p>
+            <p>During this project I referenced <a class="student-link" href="https://correial.github.io/LuccaFastRobots/" target="_blank" rel="noopener">Lucca Correia</a>'s page for guidance with filter implementation and data storage strategies. At first, I did my low pass filtering in the python code, but then decided against it. I referenced Lucca's page for ideas for how to implement the filter and store my data effectively. I also was confused about how to speed up the main loop, and was able to understand how to do that better with his page.</p>
             <p>Additionally, I used Claude for the python graphing code. The code for making graphs with matplot is tedious and repetitive, but with Claude, I would simply ask for the code for plotting specific data. An example prompt would be: "I want to plot pitch from accelerometer, gyroscope, lpf, and cf data. I already have the csv with the data." I also used Claude for help with the notification_handler function which takes incoming data from the board and puts it into a csv file.</p>
             <p>Finally, I vibecoded the entire lab page. I document all my progress in a google doc, saving images and building an outline. At the end, I paste the outline into Claude Code, and get formatted html.</p>
         </section>
