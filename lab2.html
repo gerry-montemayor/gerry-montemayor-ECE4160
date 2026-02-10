@@ -1,0 +1,1071 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" >
+    <title>Lab 2: The IMU</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        :root {
+            --bg-color: #10151b;
+            --text-color: #e6d8c0;
+            --card-bg: #161c24;
+            --card-border: #1f262f;
+            --card-outline: #26303a;
+            --muted: rgba(230, 216, 192, 0.8);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 1.05rem;
+            line-height: 1.8;
+            min-height: 100vh;
+        }
+
+        nav {
+            width: fit-content;
+            max-width: 720px;
+            margin: 28px auto 48px;
+            padding: 12px 18px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            outline: 1px solid var(--card-outline);
+            border-radius: 14px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+        }
+
+        nav a {
+            color: var(--text-color);
+            text-decoration: none;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 12px;
+            border-radius: 10px;
+            transition: background-color 0.2s ease, transform 0.2s ease;
+        }
+
+        nav a:hover {
+            background-color: rgba(230, 216, 192, 0.12);
+            transform: translateY(-1px);
+        }
+
+        nav svg {
+            width: 28px;
+            height: 28px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 1.6;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        main {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 24px 96px;
+            display: grid;
+            gap: 36px;
+        }
+
+        header h1 {
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            color: #9ae6c4;
+        }
+
+        header p {
+            color: var(--muted);
+        }
+
+        section {
+            background: transparent;
+            border: none;
+            outline: none;
+            border-radius: 0;
+            padding: 0;
+            box-shadow: none;
+        }
+
+        h2 {
+            font-size: 1.75rem;
+            margin: 0 0 14px;
+            color: #9ae6c4;
+        }
+
+        h3 {
+            font-size: 1.3rem;
+            margin: 0 0 12px;
+            color: #9ae6c4;
+        }
+
+        p {
+            margin: 0 0 14px;
+        }
+
+        ul {
+            margin: 12px 0 0 20px;
+            color: var(--muted);
+        }
+
+        .list-spaced li {
+            margin-bottom: 10px;
+        }
+
+        .subdued {
+            color: var(--muted);
+        }
+
+        a.student-link {
+            color: #8de4b2;
+            text-decoration: none;
+            border-bottom: 1px solid rgba(141, 228, 178, 0.4);
+            transition: color 0.2s ease, border-color 0.2s ease;
+        }
+
+        a.student-link:hover {
+            color: #a6f0c7;
+            border-color: rgba(166, 240, 199, 0.7);
+        }
+
+        a.student-link:visited {
+            color: #8de4b2;
+            border-color: rgba(141, 228, 178, 0.4);
+        }
+
+        .gist {
+            margin: 16px 0;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid #1f2630;
+            background: linear-gradient(180deg, #131c28 0%, #101722 100%);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 10px 22px rgba(0, 0, 0, 0.35);
+        }
+
+        .gist-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 12px;
+            background: #0f1620;
+            border-bottom: 1px solid #1f2630;
+            color: rgba(230, 216, 192, 0.9);
+            font-size: 1rem;
+        }
+
+        .gist-header .file-name {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .gist-header svg {
+            width: 18px;
+            height: 18px;
+            stroke: currentColor;
+            fill: none;
+        }
+
+        .lang-tag {
+            background: #1f2a36;
+            color: #cdd7e1;
+            border: 1px solid #2d3744;
+            padding: 2px 8px;
+            border-radius: 999px;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .gist-body {
+            padding: 14px;
+            background: #0f1722;
+        }
+
+        pre {
+            margin: 0;
+            padding: 0;
+            overflow-x: auto;
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+            font-size: 0.98rem;
+            line-height: 1.6;
+            color: #e9edf5;
+        }
+
+        code {
+            background: transparent;
+        }
+
+        .code-block {
+            display: block;
+            white-space: pre;
+        }
+
+        .code-inline {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 6px;
+            background: #0f1722;
+            border: 1px solid #1f2630;
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+            font-size: 0.95rem;
+            color: #e03a4f;
+            line-height: 1.3;
+        }
+
+        .code-kw { color: #8ad1ff; }
+        .code-fn { color: #a3d9a5; }
+        .code-str { color: #ffd48a; }
+        .code-num { color: #f3a5ff; }
+        .code-comment { color: #8da0b3; }
+        .code-op { color: #c4b5ff; }
+
+        .media-img {
+            display: block;
+            width: 100%;
+            max-width: 760px;
+            max-height: 440px;
+            object-fit: contain;
+            margin: 10px auto 6px;
+            border-radius: 10px;
+            border: 1px solid #2d3642;
+            background: #0f1722;
+            padding: 6px;
+        }
+
+        .media-placeholder {
+            margin: 10px 0;
+            padding: 14px;
+            border: 1px dashed #3a4656;
+            border-radius: 10px;
+            color: #9aa5b1;
+            text-align: center;
+        }
+
+        .video-embed {
+            position: relative;
+            width: 100%;
+            max-width: 860px;
+            aspect-ratio: 11 / 3;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #2d3642;
+            background: #0f1722;
+            margin: 12px auto;
+        }
+
+        .video-embed iframe,
+        .video-embed video {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+            object-fit: contain;
+        }
+
+        .video-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 14px;
+            border-radius: 10px;
+            background: #0f1722;
+            border: 1px solid #2d3642;
+            color: #8de4b2;
+            text-decoration: none;
+            transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+            margin: 8px 0 4px;
+        }
+
+        .video-link:hover {
+            background: #152033;
+            border-color: #3a4a5d;
+            color: #a6f0c7;
+        }
+
+        .gist-embed {
+            margin: 18px 0;
+        }
+
+        .section-divider {
+            border: 0;
+            height: 1px;
+            background: #2e3641;
+            margin: 8px 0 28px;
+        }
+
+        .task-divider {
+            border: 0;
+            height: 1px;
+            background: none;
+            border-top: 1px dashed #3b4552;
+            margin: 24px 0;
+        }
+
+        .callout {
+            border-left: 4px solid #9ae6c4;
+            padding: 10px 14px;
+            background: #0f1623;
+            border-radius: 10px;
+            color: var(--muted);
+            margin: 10px 0 16px;
+        }
+
+        .accel-row {
+            margin: 24px 0;
+        }
+
+
+        .accel-pair {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+
+        }
+
+
+        .accel-pair .accel-img {
+            width: 240px;
+            height: 240px;
+            object-fit: cover;
+            border-radius: 10px;
+            border: 1px solid #2d3642;
+            background: #0f1722;
+            flex-shrink: 0;
+        }
+
+        .img-grid-2x2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin: 10px 0;
+        }
+
+        .img-grid-2x2 img {
+            width: 100%;
+            max-width: none;
+            margin: 0;
+        }
+
+        @media (max-width: 640px) {
+            nav {
+                flex-wrap: wrap;
+            }
+            .accel-pair {
+                flex-direction: column;
+            }
+            .accel-pair .accel-img {
+                width: 100%;
+                height: 240px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="index.html">
+            <svg aria-hidden="true" viewBox="0 0 24 24">
+                <path d="M4 10.75 12 4l8 6.75"/>
+                <path d="M5.5 11.75V20h4.5v-4.75h4V20h4.5v-8.25"/>
+            </svg>
+            <span>Home</span>
+        </a>
+        <a href="labs.html">
+            <svg aria-hidden="true" viewBox="0 0 24 24">
+                <path d="M4.5 6.5h5l1.5 2H19a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1h-14a1 1 0 0 1-1-1v-9a1 1 0 0 1 1-1Z"/>
+            </svg>
+            <span>Labs</span>
+        </a>
+    </nav>
+
+    <main>
+        <header>
+            <h1>Lab 2: IMU</h1>
+            <p>Goal: add the IMU to the robot, power Artemis and sensors from battery, and record a stunt.</p>
+        </header>
+
+        <section id="prelab">
+            <h2>Prelab</h2>
+            <p>Read the IMU overview (SparkFun ICM-20948 guide) and skimmed the lab instructions to understand wiring, address selection, and register access flow.</p>
+        </section>
+
+        <hr class="section-divider">
+
+        <section id="setup">
+            <h2>Setting up the IMU</h2>
+            <ul class="list-spaced">
+                <li>Installed <span class="code-inline">SparkFun 9DOF IMU Breakout - ICM-20948</span> Arduino library via Library Manager.</li>
+                <li>Connected the IMU to the Artemis board with QWIIC cables.</li>
+                <li>Ran <span class="code-inline">examples/Arduino/Example1_Basics</span> from the library to confirm comms.</li>
+            </ul>
+            <strong>AD0_VAL:</strong> describe here whether AD0 is pulled high/low and resulting I2C address (0x68 or 0x69) to match the sketch config.
+           
+            <div style="margin-bottom: 28px;"></div>
+
+            <div class="accel-row">
+                <h3 class="accel-label">X Vector Upwards</h3>
+                <p> We can see when the x direction faces straight up, the acceleration is close to 9.8, or gravity</p>
+                <p> We observe the same for when Y and Z face upwards.</p>
+                <div class="accel-pair">
+                    <img class="accel-img" src="media/lab2/x_up_accel.jpeg" alt="Acceleration plot with +X up">
+                    <div class="video-embed">
+                        <video src="media/lab2/x_up_accel.mov" controls muted playsinline></video>
+                    </div>
+                </div>
+            </div>
+
+            <div class="accel-row">
+                <h3 class="accel-label">Y Vector Upwards</h3>
+                <div class="accel-pair">
+                    <img class="accel-img" src="media/lab2/y_up_accel.jpeg" alt="Acceleration plot with +Y up">
+                    <div class="video-embed">
+                        <video src="media/lab2/y_up_accel.mov" controls muted playsinline></video>
+                    </div>
+                </div>
+            </div>
+
+            <div class="accel-row">
+                <h3 class="accel-label">Z Vector Upwards</h3>
+                <div class="accel-pair">
+                    <img class="accel-img" src="media/lab2/z_up_accel.jpeg" alt="Acceleration plot with +Z up">
+                    <div class="video-embed">
+                        <video src="media/lab2/z_up_accel.mov" controls muted playsinline></video>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <p>Overall, the accelerometer and gyroscope were providing good readings, when the IMU was still, the gyroscope measurements read ~0, which is expected.</p>
+            </div>
+
+            <h3>Board Power Indicator</h3>
+            <p>To indicate that the board is on, I added the code below to the setup() function in ble_arduino.ino</p>
+            <div class="gist">
+                <div class="gist-header">
+                    <span class="file-name">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M4 5.5h16M4 12h16M4 18.5h16"/>
+                        </svg>
+                        LED Blink on Startup
+                    </span>
+                    <span class="lang-tag">C</span>
+                </div>
+                <div class="gist-body">
+                    <pre><code class="code-block"><span class="code-comment">// indicate board on with 3 blinks</span>
+<span class="code-fn">pinMode</span>(LED_BUILTIN, OUTPUT);
+<span class="code-kw">for</span> (<span class="code-kw">int</span> i <span class="code-op">=</span> <span class="code-num">0</span>; i <span class="code-op">&lt;</span> <span class="code-num">3</span>; i<span class="code-op">++</span>) {
+    <span class="code-fn">digitalWrite</span>(LED_BUILTIN, HIGH);
+    <span class="code-fn">delay</span>(<span class="code-num">250</span>);
+    <span class="code-fn">digitalWrite</span>(LED_BUILTIN, LOW);
+    <span class="code-fn">delay</span>(<span class="code-num">250</span>);
+}</code></pre>
+                </div>
+            </div>
+        </section>
+
+        <hr class="section-divider">
+
+        <section id="accelerometer">
+            <h2>Accelerometer</h2>
+            <p>Now that I have verified that I can get IMU readings, I want to convert accelerometer data into pitch and roll. I copied over the defined variables from the example code into <span class="code-inline">ble_arduino.ino</span>. Next, I added a new function called <span class="code-inline">IMU_LOOP</span>, which continues collecting pitch and roll data and visualizes it with the serial plotter. I made sure to use the functions, <span class="code-inline">myICM.dataReady()</span> and <span class="code-inline">myICM.getAGMT()</span>, from the example code.</p>
+            <p>After I implemented pitch and roll with the following equations:</p>
+            <img class="media-img" src="media/lab2/roll_pitch_equations.png" alt="Pitch and roll equations" style="max-width: 380px;">
+            <p>I was able to cleanly visualize both:</p>
+            <div class="video-embed">
+                <iframe width="560" height="315" src="https://www.youtube.com/embed/Li6XSNW7_yg?si=3SJPVYB_FtUn9XC5" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+            </div>            
+            <div class="gist">
+                <div class="gist-header">
+                    <span class="file-name">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M4 5.5h16M4 12h16M4 18.5h16"/>
+                        </svg>
+                        Arduino
+                    </span>
+                    <span class="lang-tag">C</span>
+                </div>
+                <div class="gist-body">
+                    <pre><code class="code-block"><span class="code-kw">case</span> IMU_LOOP: {
+
+    <span class="code-kw">float</span> pitch;
+    <span class="code-kw">float</span> roll;
+    <span class="code-kw">while</span> (<span class="code-kw">true</span>) {
+        <span class="code-kw">while</span> (<span class="code-op">!</span>myICM.<span class="code-fn">dataReady</span>()) {}
+        myICM.<span class="code-fn">getAGMT</span>();
+
+        roll <span class="code-op">=</span> <span class="code-fn">atan2</span>(myICM.<span class="code-fn">accX</span>(), myICM.<span class="code-fn">accZ</span>()) <span class="code-op">*</span> <span class="code-num">180</span> <span class="code-op">/</span> M_PI;
+        pitch <span class="code-op">=</span> <span class="code-fn">atan2</span>(myICM.<span class="code-fn">accY</span>(), myICM.<span class="code-fn">accZ</span>()) <span class="code-op">*</span> <span class="code-num">180</span> <span class="code-op">/</span> M_PI;
+
+        Serial.<span class="code-fn">print</span>(<span class="code-num">-150</span>); Serial.<span class="code-fn">print</span>(<span class="code-str">" "</span>);
+        Serial.<span class="code-fn">print</span>(<span class="code-num">150</span>);  Serial.<span class="code-fn">print</span>(<span class="code-str">" "</span>);
+        Serial.<span class="code-fn">print</span>(roll); Serial.<span class="code-fn">print</span>(<span class="code-str">" "</span>);
+        Serial.<span class="code-fn">println</span>(pitch);
+    }
+}
+    <span class="code-kw">break</span>;</code></pre>
+                </div>
+            </div>
+
+            <hr class="task-divider">
+
+            <h2>Accelerometer Checks</h2>
+            <div class="img-grid-2x2">
+                <div>
+                    <h3>Pitch = -90°</h3>
+                    <img class="media-img" src="media/lab2/pitch_neg90.png" alt="-90° pitch orientation">
+                </div>
+                <div>
+                    <h3>Pitch = +90°</h3>
+                    <img class="media-img" src="media/lab2/pitch_90.png" alt="+90° pitch orientation">
+                </div>
+                <div>
+                    <h3>Roll = -90°</h3>
+                    <img class="media-img" src="media/lab2/roll_neg90.png" alt="-90° roll orientation">
+                </div>
+                <div>
+                    <h3>Roll = +90°</h3>
+                    <img class="media-img" src="media/lab2/roll_90.png" alt="+90° roll orientation">
+                </div>
+            </div>
+            <div style="margin: 10px auto;">
+                <h3>{-90, 0, 90} Pitch and Roll</h3>
+                <img class="media-img" src="media/lab2/pitch_neg90_roll_90.png" alt="-90° pitch, +90° roll orientation" style="max-width: 380px;">
+            </div>
+            <p>As we can see in the readings above, the accelerometer is very accurate, staying within one degree of desired measurement. Therefore, I did not need to calculate a conversion factor for calibration.</p>
+        </section>
+
+        <hr class="task-divider">
+
+        <section id="fft">
+            <h2>FFT + Noise</h2>
+            <p>Next, I wanted to record data and analyze noise in the frequency spectrum using FFT. First, I wrote a new function, GET_ACCEL_DATA,  that sends time, roll, and pitch data over BLE so I can work with it in Python. On the Jupyter Notebook (python), I save the data into a CSV file, which I then can analyze.</p>
+            <p>In the arduino code, I saved time, roll, and pitch data in separate arrays, each of the same size. For this case, I used an array of size 100.</p>
+            <div class="gist">
+                <div class="gist-header">
+                    <span class="file-name">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M4 5.5h16M4 12h16M4 18.5h16"/>
+                        </svg>
+                        Array Setup
+                    </span>
+                    <span class="lang-tag">C</span>
+                </div>
+                <div class="gist-body">
+                    <pre><code class="code-block"><span class="code-kw">int</span> accel_arr_size <span class="code-op">=</span> <span class="code-num">300</span>;
+<span class="code-kw">float</span> millis_arr[<span class="code-num">300</span>];
+<span class="code-kw">float</span> roll_arr[<span class="code-num">300</span>];
+<span class="code-kw">float</span> pitch_arr[<span class="code-num">300</span>];</code></pre>
+                </div>
+            </div>
+            <div class="gist">
+                <div class="gist-header">
+                    <span class="file-name">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M4 5.5h16M4 12h16M4 18.5h16"/>
+                        </svg>
+                        Arduino
+                    </span>
+                    <span class="lang-tag">C</span>
+                </div>
+                <div class="gist-body">
+                    <pre><code class="code-block"><span class="code-kw">case</span> GET_ACCEL_DATA: {
+
+    <span class="code-kw">float</span> pitch;
+    <span class="code-kw">float</span> roll;
+
+    <span class="code-comment">// gather roll, pitch data into array</span>
+    <span class="code-kw">for</span> (<span class="code-kw">int</span> i <span class="code-op">=</span> <span class="code-num">0</span>; i <span class="code-op">&lt;</span> accel_arr_size; i<span class="code-op">++</span>) {
+
+        <span class="code-comment">//wait for ICM data</span>
+        <span class="code-kw">while</span> (<span class="code-op">!</span>myICM.<span class="code-fn">dataReady</span>()) {}
+
+        <span class="code-comment">// once ready, fetch</span>
+        myICM.<span class="code-fn">getAGMT</span>();
+        roll <span class="code-op">=</span> <span class="code-fn">atan2</span>(myICM.<span class="code-fn">accX</span>(), myICM.<span class="code-fn">accZ</span>()) <span class="code-op">*</span> <span class="code-num">180</span> <span class="code-op">/</span> M_PI;
+        pitch <span class="code-op">=</span> <span class="code-fn">atan2</span>(myICM.<span class="code-fn">accY</span>(), myICM.<span class="code-fn">accZ</span>()) <span class="code-op">*</span> <span class="code-num">180</span> <span class="code-op">/</span> M_PI;
+
+        millis_arr[i] <span class="code-op">=</span> <span class="code-fn">millis</span>();
+        roll_arr[i] <span class="code-op">=</span> roll;
+        pitch_arr[i] <span class="code-op">=</span> pitch;
+    }
+
+    <span class="code-comment">// send time, roll, pitch data over ble</span>
+    <span class="code-kw">for</span> (<span class="code-kw">int</span> j <span class="code-op">=</span> <span class="code-num">0</span>; j <span class="code-op">&lt;</span> accel_arr_size; j<span class="code-op">++</span>) {
+        tx_estring_value.<span class="code-fn">clear</span>();
+        tx_estring_value.<span class="code-fn">append</span>(<span class="code-str">"Time:"</span>);
+        tx_estring_value.<span class="code-fn">append</span>(millis_arr[j]);
+        tx_estring_value.<span class="code-fn">append</span>(<span class="code-str">",Roll:"</span>);
+        tx_estring_value.<span class="code-fn">append</span>(roll_arr[j]);
+        tx_characteristic_string.<span class="code-fn">writeValue</span>(tx_estring_value.<span class="code-fn">c_str</span>());
+        tx_estring_value.<span class="code-fn">append</span>(<span class="code-str">",Pitch:"</span>);
+        tx_estring_value.<span class="code-fn">append</span>(pitch_arr[j]);
+        tx_characteristic_string.<span class="code-fn">writeValue</span>(tx_estring_value.<span class="code-fn">c_str</span>());
+    }
+}
+
+    <span class="code-kw">break</span>;</code></pre>
+                </div>
+            </div>
+            <div class="gist">
+                <div class="gist-header">
+                    <span class="file-name">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M4 5.5h16M4 12h16M4 18.5h16"/>
+                        </svg>
+                        Jupyter Notebook
+                    </span>
+                    <span class="lang-tag">Python</span>
+                </div>
+                <div class="gist-body">
+                    <pre><code class="code-block"><span class="code-kw">def</span> <span class="code-fn">notification_handler</span>(sender_uuid, data):
+    datapoint <span class="code-op">=</span> data.<span class="code-fn">decode</span>(<span class="code-str">"utf-8"</span>).<span class="code-fn">strip</span>()
+    time, roll, pitch <span class="code-op">=</span> datapoint.<span class="code-fn">split</span>(<span class="code-str">","</span>)
+    time <span class="code-op">=</span> time[<span class="code-num">5</span>:]
+    roll <span class="code-op">=</span> roll[<span class="code-num">5</span>:]
+    pitch <span class="code-op">=</span> pitch[<span class="code-num">6</span>:]
+    <span class="code-kw">with</span> <span class="code-fn">open</span>(<span class="code-str">"imu_data.csv"</span>, <span class="code-str">"a+"</span>) <span class="code-kw">as</span> f:
+        f.<span class="code-fn">seek</span>(<span class="code-num">0</span>)
+        <span class="code-kw">if</span> f.<span class="code-fn">read</span>(<span class="code-num">1</span>) <span class="code-op">==</span> <span class="code-str">""</span>:
+            f.<span class="code-fn">write</span>(<span class="code-str">"Time,Pitch,Roll\n"</span>)
+        f.<span class="code-fn">write</span>(<span class="code-kw">f</span><span class="code-str">"{time},{pitch},{roll}\n"</span>)
+
+ble.<span class="code-fn">start_notify</span>(ble.uuid[<span class="code-str">'RX_STRING'</span>], notification_handler)
+ble.<span class="code-fn">send_command</span>(CMD.GET_ACCEL_DATA, <span class="code-str">""</span>)</code></pre>
+                </div>
+            </div>
+
+            <hr class="task-divider">
+
+            <h3>FFT Analysis</h3>
+            <p>Next, I used a Fast Fourier Transform to analyze the frequency spectrum of pitch and roll data when the car was running near the IMU to introduce noise. It's important to analyze the frequency spectrum, because certain outer sources, like the car, can introduce noise to the system, which messes with our readings. When implementing the low-pass filter, we want to know where our frequency cutoff is.</p>
+            <div class="gist">
+                <div class="gist-header">
+                    <span class="file-name">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M4 5.5h16M4 12h16M4 18.5h16"/>
+                        </svg>
+                        FFT Analysis
+                    </span>
+                    <span class="lang-tag">Python</span>
+                </div>
+                <div class="gist-body">
+                    <pre><code class="code-block"><span class="code-kw">import</span> numpy <span class="code-kw">as</span> np
+<span class="code-kw">import</span> matplotlib.pyplot <span class="code-kw">as</span> plt
+<span class="code-kw">from</span> scipy.fft <span class="code-kw">import</span> fft, fftfreq
+
+datapoints <span class="code-op">=</span> np.<span class="code-fn">loadtxt</span>(<span class="code-str">'imu_data_loud.csv'</span>, delimiter<span class="code-op">=</span><span class="code-str">','</span>, skiprows<span class="code-op">=</span><span class="code-num">1</span>)
+time_data <span class="code-op">=</span> datapoints[:, <span class="code-num">0</span>] <span class="code-op">/</span> <span class="code-num">1000</span>
+pitch_data <span class="code-op">=</span> datapoints[:, <span class="code-num">1</span>]
+roll_data <span class="code-op">=</span> datapoints[:, <span class="code-num">2</span>]
+
+N <span class="code-op">=</span> <span class="code-fn">len</span>(pitch_data)
+T <span class="code-op">=</span> np.<span class="code-fn">mean</span>(np.<span class="code-fn">diff</span>(time_data))
+
+yf_pitch <span class="code-op">=</span> <span class="code-fn">fft</span>(pitch_data)
+yf_roll <span class="code-op">=</span> <span class="code-fn">fft</span>(roll_data)
+xf <span class="code-op">=</span> <span class="code-fn">fftfreq</span>(N, T)[:N<span class="code-op">//</span><span class="code-num">2</span>]
+
+fig, ax <span class="code-op">=</span> plt.<span class="code-fn">subplots</span>(<span class="code-num">1</span>, <span class="code-num">1</span>, figsize<span class="code-op">=</span>(<span class="code-num">12</span>, <span class="code-num">6</span>))
+
+ax.<span class="code-fn">plot</span>(xf, <span class="code-num">2.0</span><span class="code-op">/</span>N <span class="code-op">*</span> np.<span class="code-fn">abs</span>(yf_pitch[<span class="code-num">0</span>:N<span class="code-op">//</span><span class="code-num">2</span>]), label<span class="code-op">=</span><span class="code-str">'Pitch'</span>, alpha<span class="code-op">=</span><span class="code-num">0.7</span>)
+ax.<span class="code-fn">plot</span>(xf, <span class="code-num">2.0</span><span class="code-op">/</span>N <span class="code-op">*</span> np.<span class="code-fn">abs</span>(yf_roll[<span class="code-num">0</span>:N<span class="code-op">//</span><span class="code-num">2</span>]), label<span class="code-op">=</span><span class="code-str">'Roll'</span>, alpha<span class="code-op">=</span><span class="code-num">0.7</span>)
+ax.<span class="code-fn">set_xlabel</span>(<span class="code-str">'Frequency (Hz)'</span>)
+ax.<span class="code-fn">set_ylabel</span>(<span class="code-str">'Amplitude'</span>)
+ax.<span class="code-fn">set_title</span>(<span class="code-str">'Frequency Spectrum'</span>)
+ax.<span class="code-fn">legend</span>()
+ax.<span class="code-fn">grid</span>(<span class="code-kw">True</span>)
+
+plt.<span class="code-fn">tight_layout</span>()
+plt.<span class="code-fn">savefig</span>(<span class="code-str">'fft_noise_analysis_loud.png'</span>, dpi<span class="code-op">=</span><span class="code-num">300</span>)
+plt.<span class="code-fn">show</span>()</code></pre>
+                </div>
+            </div>
+            <img class="media-img" src="media/lab2/fft_noise_analysis_loud.png" alt="FFT of accelerometer noise (loud environment)">
+            <p>With the data above, I see that 5Hz would be a good cutoff frequency, since we want to limit the high frequencies from affecting the data.                </p>
+        </section>
+
+        <hr class="task-divider">
+
+        <section id="lpf">
+            <h2>Low-Pass Filter</h2>
+            <p>Next, using 5 Hz as frequency cutoff, I calculate the alpha value for the low-pass filter.</p>
+            <div class="gist">
+                <div class="gist-header">
+                    <span class="file-name">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M4 5.5h16M4 12h16M4 18.5h16"/>
+                        </svg>
+                        Filter Parameters
+                    </span>
+                    <span class="lang-tag">Python</span>
+                </div>
+                <div class="gist-body">
+                    <pre><code class="code-block">T <span class="code-op">=</span> np.<span class="code-fn">mean</span>(np.<span class="code-fn">diff</span>(time_loud))
+<span class="code-fn">print</span>(<span class="code-str">"T = "</span>, T)
+f_c <span class="code-op">=</span> <span class="code-num">5</span>
+RC <span class="code-op">=</span> <span class="code-num">1</span> <span class="code-op">/</span> (<span class="code-num">2</span> <span class="code-op">*</span> np.pi <span class="code-op">*</span> f_c)
+<span class="code-fn">print</span>(<span class="code-str">"RC ="</span>, RC)
+alpha <span class="code-op">=</span> T <span class="code-op">/</span> (T <span class="code-op">+</span> RC)
+<span class="code-fn">print</span>(<span class="code-str">"α = "</span>, alpha)</code></pre>
+                </div>
+            </div>
+            <p><span class="code-inline">T = 0.00230769230769249</span>, <span class="code-inline">RC = 0.03183098861837907</span>, <span class="code-inline">α = 0.0675975827153332</span></p>
+            <p>Then, I use the following formula to plot filtered data, comparing it with the raw data.</p>
+            <div class="gist">
+                <div class="gist-header">
+                    <span class="file-name">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M4 5.5h16M4 12h16M4 18.5h16"/>
+                        </svg>
+                        Low-Pass Filter
+                    </span>
+                    <span class="lang-tag">Python</span>
+                </div>
+                <div class="gist-body">
+                    <pre><code class="code-block"><span class="code-kw">for</span> i <span class="code-kw">in</span> <span class="code-fn">range</span>(<span class="code-num">1</span>, N):
+    filtered_pitch[i] <span class="code-op">=</span> alpha <span class="code-op">*</span> pitch_data[i] <span class="code-op">+</span> (<span class="code-num">1</span> <span class="code-op">-</span> alpha) <span class="code-op">*</span> filtered_pitch[i<span class="code-op">-</span><span class="code-num">1</span>]
+    filtered_roll[i] <span class="code-op">=</span> alpha <span class="code-op">*</span> roll_data[i] <span class="code-op">+</span> (<span class="code-num">1</span> <span class="code-op">-</span> alpha) <span class="code-op">*</span> filtered_roll[i<span class="code-op">-</span><span class="code-num">1</span>]</code></pre>
+                </div>
+            </div>
+            <p>As we can see in the graph below, the filter does a great job of smoothening the data out, reducing noise.</p>
+            <img class="media-img" style="max-width: 900px" src="media/lab2/low_pass_filtered_vs_fft.png" alt="Filtered accelerometer data vs FFT-derived cutoff">
+        </section>
+
+        <hr class="section-divider">
+
+        <section id="gyroscope">
+            <h2>Gyroscope</h2>
+            <p>On the board, the gyroscope has different default axes than the accelerometer.
+            Therefore, the raw roll and pitch will look different if we don't account for the different default axes. In the image shown below, we can see that the gyroscope roll is completely different from the accelerometer roll. The gyroscope roll is actually approximately the same as the accelerometer pitch. Additionally, the negation of gyroscope pitch is approximately the accelerometer roll.</p>
+            <img class="media-img" src="media/lab2/gyro_vs_accel_data.png" alt="Gyroscope vs accelerometer data comparison">
+            <p>To standardize roll and pitch data from the gyroscope and accelerometer to the same default axes, I simply swap the values:</p>
+            <div class="gist">
+                <div class="gist-header">
+                    <span class="file-name">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M4 5.5h16M4 12h16M4 18.5h16"/>
+                        </svg>
+                        Axis Correction
+                    </span>
+                    <span class="lang-tag">C</span>
+                </div>
+                <div class="gist-body">
+                    <pre><code class="code-block">g_roll <span class="code-op">+=</span> <span class="code-num">-1</span> <span class="code-op">*</span> myICM.<span class="code-fn">gyrY</span>() <span class="code-op">*</span> dt;
+g_pitch <span class="code-op">+=</span> myICM.<span class="code-fn">gyrX</span>() <span class="code-op">*</span> dt;</code></pre>
+                </div>
+            </div>
+            <p>It was important to note that the gyroscope measures the rate of rotation &ndash; during testing, I tried keeping the IMU steady at a certain angle, anticipating that the gyroscope pitch and accelerometer pitch would read the same, but the gyroscope pitch would stay ~0 degrees while the accelerometer pitch read ~45 degrees. To actually see readings from the gyroscope it had to be rotating.</p>
+            <p>I also can now get yaw measurements with the gyro:</p>
+            <img class="media-img" src="media/lab2/gyro_yaw.png" alt="Gyro yaw data from rotating IMU">
+
+            <hr class="task-divider">
+
+            <h3>Sampling Frequency</h3>
+            <p>Next, I made some changes to the sampling frequency to observe what would happen to my data. I added a delay of 60 ms to the collection loop.</p>
+            <img class="media-img" src="media/lab2/delay.png" alt="Data with 60ms sampling delay">
+            <p>In the graph above, we can see that the time collection took a lot longer, just a little over a minute, compared to previous collections, which took less than 5 seconds. The data is a lot spikier because of the longer time span, but I also noticed that filtered peaks don't reach all the way to +90/-90 degrees, which is how far I was rotating. Introducing the sampling delay can prevent the IMU from capturing data when it is at these positions, therefore not giving us the most accurate results. The raw data peaks however did sometimes reach +90/-90 degrees, indicating that the filter is also playing a part in &ldquo;ignoring&rdquo; readings at those angles.</p>
+
+            <hr class="task-divider">
+
+            <h3>Complementary Filter</h3>
+            <p>When I was implementing the complementary filter, I realized that filter implementations should be on the arduino. I had been post-processing data on python. Therefore, I wrote a new function on the arduino called <span class="code-inline">getIMUData</span>. Rather than having separate commands in my switch-cases, this function collects accelerometer and gyroscope pitch and roll data, as well as filtered data with the low-pass filter and complementary filter.</p>
+            <div class="gist">
+                <div class="gist-header">
+                    <span class="file-name">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M4 5.5h16M4 12h16M4 18.5h16"/>
+                        </svg>
+                        getIMUData()
+                    </span>
+                    <span class="lang-tag">C</span>
+                </div>
+                <div class="gist-body">
+                    <pre><code class="code-block"><span class="code-kw">void</span>
+<span class="code-fn">getIMUData</span>() {
+
+    <span class="code-comment">//accelerometer variables</span>
+    <span class="code-kw">float</span> a_pitch;
+    <span class="code-kw">float</span> a_roll;
+
+    <span class="code-comment">// LPF variables</span>
+    <span class="code-kw">float</span> lpf_pitch <span class="code-op">=</span> <span class="code-num">0.0</span>;
+    <span class="code-kw">float</span> lpf_roll <span class="code-op">=</span> <span class="code-num">0.0</span>;
+    <span class="code-kw">float</span> dt;
+
+    <span class="code-comment">//gyroscope variables</span>
+    <span class="code-kw">float</span> g_pitch <span class="code-op">=</span> <span class="code-num">0.0</span>;
+    <span class="code-kw">float</span> g_roll  <span class="code-op">=</span> <span class="code-num">0.0</span>;
+    <span class="code-kw">float</span> g_yaw   <span class="code-op">=</span> <span class="code-num">0.0</span>;
+
+    <span class="code-comment">//CF variables</span>
+    <span class="code-kw">float</span> cf_roll <span class="code-op">=</span> <span class="code-num">0.0</span>;
+    <span class="code-kw">float</span> cf_pitch <span class="code-op">=</span> <span class="code-num">0.0</span>;
+
+    <span class="code-kw">float</span> curr_time;
+    <span class="code-kw">float</span> last_time <span class="code-op">=</span> <span class="code-fn">millis</span>();
+
+    <span class="code-kw">for</span> (<span class="code-kw">int</span> i <span class="code-op">=</span> <span class="code-num">0</span>; i <span class="code-op">&lt;</span> DATAPOINTS; i<span class="code-op">++</span>) {
+
+        <span class="code-comment">// wait for data available</span>
+        <span class="code-kw">while</span> (<span class="code-op">!</span>myICM.<span class="code-fn">dataReady</span>()) {}
+
+        <span class="code-comment">// get data</span>
+        myICM.<span class="code-fn">getAGMT</span>();
+        curr_time <span class="code-op">=</span> <span class="code-fn">millis</span>();
+        dt <span class="code-op">=</span> (curr_time <span class="code-op">-</span> last_time) <span class="code-op">/</span> <span class="code-num">1000.0</span>;
+        last_time <span class="code-op">=</span> curr_time;
+        millis_arr[i] <span class="code-op">=</span> curr_time;
+
+        <span class="code-comment">// raw roll and pitch from accelerometer</span>
+        a_roll  <span class="code-op">=</span> <span class="code-fn">atan2</span>(myICM.<span class="code-fn">accX</span>(), myICM.<span class="code-fn">accZ</span>()) <span class="code-op">*</span> <span class="code-num">180</span> <span class="code-op">/</span> M_PI;
+        roll_accelerometer[i] <span class="code-op">=</span> a_roll;
+        a_pitch <span class="code-op">=</span> <span class="code-fn">atan2</span>(myICM.<span class="code-fn">accY</span>(), myICM.<span class="code-fn">accZ</span>()) <span class="code-op">*</span> <span class="code-num">180</span> <span class="code-op">/</span> M_PI;
+        pitch_accelerometer[i] <span class="code-op">=</span> a_pitch;
+
+        <span class="code-comment">// lpf for roll and pitch</span>
+        lpf_roll <span class="code-op">=</span> alpha <span class="code-op">*</span> a_roll <span class="code-op">+</span> (<span class="code-num">1.0</span> <span class="code-op">-</span> alpha) <span class="code-op">*</span> lpf_roll;
+        lpf_roll_arr[i] <span class="code-op">=</span> lpf_roll;
+        lpf_pitch <span class="code-op">=</span> alpha <span class="code-op">*</span> a_pitch <span class="code-op">+</span> (<span class="code-num">1.0</span> <span class="code-op">-</span> alpha) <span class="code-op">*</span> lpf_pitch;
+        lpf_pitch_arr[i] <span class="code-op">=</span> lpf_pitch;
+
+        <span class="code-comment">// raw roll, pitch, and yaw from gyroscope</span>
+        g_roll <span class="code-op">+=</span> <span class="code-num">-1</span> <span class="code-op">*</span> myICM.<span class="code-fn">gyrY</span>() <span class="code-op">*</span> dt;
+        g_pitch <span class="code-op">+=</span> myICM.<span class="code-fn">gyrX</span>() <span class="code-op">*</span> dt;
+        g_yaw <span class="code-op">+=</span> myICM.<span class="code-fn">gyrZ</span>() <span class="code-op">*</span> dt;
+
+        roll_gyro[i]  <span class="code-op">=</span> g_roll;
+        pitch_gyro[i] <span class="code-op">=</span> g_pitch;
+        yaw_gyro[i]   <span class="code-op">=</span> g_yaw;
+
+        <span class="code-comment">// complementary filter for roll, pitch, and yaw</span>
+        cf_pitch <span class="code-op">=</span> alpha <span class="code-op">*</span> (cf_pitch <span class="code-op">+</span> g_pitch <span class="code-op">*</span> dt) <span class="code-op">*</span> (<span class="code-num">1.0</span> <span class="code-op">-</span> alpha) <span class="code-op">+</span> lpf_pitch;
+        cf_roll <span class="code-op">=</span> alpha <span class="code-op">*</span> (cf_roll <span class="code-op">+</span> g_roll <span class="code-op">*</span> dt) <span class="code-op">*</span> (<span class="code-num">1.0</span> <span class="code-op">-</span> alpha) <span class="code-op">+</span> lpf_roll;
+
+        cf_pitch_arr[i] <span class="code-op">=</span> cf_pitch;
+        cf_roll_arr[i] <span class="code-op">=</span> cf_roll;
+
+        <span class="code-fn">delay</span>(<span class="code-num">10</span>);
+    }
+    <span class="code-kw">for</span> (<span class="code-kw">int</span> j <span class="code-op">=</span> <span class="code-num">0</span>; j <span class="code-op">&lt;</span> DATAPOINTS; j<span class="code-op">++</span>) {
+        tx_estring_value.<span class="code-fn">clear</span>();
+        tx_estring_value.<span class="code-fn">append</span>(millis_arr[j]);
+        tx_estring_value.<span class="code-fn">append</span>(<span class="code-str">","</span>);
+        tx_estring_value.<span class="code-fn">append</span>(roll_accelerometer[j]);
+        tx_estring_value.<span class="code-fn">append</span>(<span class="code-str">","</span>);
+        tx_estring_value.<span class="code-fn">append</span>(pitch_accelerometer[j]);
+        tx_estring_value.<span class="code-fn">append</span>(<span class="code-str">","</span>);
+        tx_estring_value.<span class="code-fn">append</span>(lpf_roll_arr[j]);
+        tx_estring_value.<span class="code-fn">append</span>(<span class="code-str">","</span>);
+        tx_estring_value.<span class="code-fn">append</span>(lpf_pitch_arr[j]);
+        tx_estring_value.<span class="code-fn">append</span>(<span class="code-str">","</span>);
+        tx_estring_value.<span class="code-fn">append</span>(roll_gyro[j]);
+        tx_estring_value.<span class="code-fn">append</span>(<span class="code-str">","</span>);
+        tx_estring_value.<span class="code-fn">append</span>(pitch_gyro[j]);
+        tx_estring_value.<span class="code-fn">append</span>(<span class="code-str">","</span>);
+        tx_estring_value.<span class="code-fn">append</span>(yaw_gyro[j]);
+        tx_estring_value.<span class="code-fn">append</span>(<span class="code-str">","</span>);
+        tx_estring_value.<span class="code-fn">append</span>(cf_roll_arr[j]);
+        tx_estring_value.<span class="code-fn">append</span>(<span class="code-str">","</span>);
+        tx_estring_value.<span class="code-fn">append</span>(cf_pitch_arr[j]);
+        tx_characteristic_string.<span class="code-fn">writeValue</span>(tx_estring_value.<span class="code-fn">c_str</span>());
+    }
+}</code></pre>
+                </div>
+            </div>
+            <p>Now, let's take a look at comparisons. There are now four values each for pitch and roll: accelerometer, LPF on accelerometer, gyroscope, and CF on gyroscope. Let's take a look at comparisons below.</p>
+            <h3>Pitch Comparison </h3>
+            <p>Data collected by rotating between -90 and 90 degrees</p>
+            <img class="media-img" src="media/lab2/pitch_comparison.png" alt="Pitch comparison: accelerometer, LPF, gyroscope, complementary filter">
+            <h3>Roll Comparison</h3>
+            <p>Data collected by rotating between -90 and 90 degrees</p>
+            <img class="media-img" src="media/lab2/roll_comparison.png" alt="Roll comparison: accelerometer, LPF, gyroscope, complementary filter">
+
+            <h3>Drift Test</h3>
+            <p>For the drift test, I kept the IMU still for over ~12 seconds, and we can see in the graph below that for both pitch and roll, the complementary filter keeps the angles at ~0 degrees, preventing drift!</p>
+            <h3>Pitch Drift</h3>
+            <img class="media-img" src="media/lab2/pitch_drift.png" alt="Pitch drift test: complementary filter prevents drift">
+            <h3>Roll Drift</h3>
+            <img class="media-img" src="media/lab2/roll_drift.png" alt="Roll drift test: complementary filter prevents drift">
+
+            <h3>Vibration Test</h3>
+            <p>To see how the complementary filter handles fast vibrations, I collected data while quickly vibrating the IMU, rotating it quickly and shaking it slightly. As we can see in the graphs below, the complementary filter did a good job of staying consistent and not responding to the vibrations.</p>
+            <h3>Pitch Vibration</h3>
+            <img class="media-img" src="media/lab2/pitch_vibration.png" alt="Pitch vibration test: complementary filter handles fast vibrations">
+            <h3>Roll Vibration</h3>
+            <img class="media-img" src="media/lab2/roll_vibration.png" alt="Roll vibration test: complementary filter handles fast vibrations">
+        </section>
+
+        <hr class="section-divider">
+
+        <section id="sample-data">
+            <h2>Sample Data</h2>
+            <p>To speed up execution of the main loop, I wrote a new function: <span class="code-inline">GetIMUDataFast()</span>. I had to modify the <span class="code-inline">GetIMUData()</span> function I wrote before. Rather than running the loop in the command, there is a global variable: <span class="code-inline">collect</span>, that starts and stops data collection.</p>
+            <div class="gist">
+                <div class="gist-header">
+                    <span class="file-name">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M4 5.5h16M4 12h16M4 18.5h16"/>
+                        </svg>
+                        getIMUDataFast()
+                    </span>
+                    <span class="lang-tag">C</span>
+                </div>
+                <div class="gist-body">
+                    <pre><code class="code-block"><span class="code-kw">void</span> <span class="code-fn">getIMUDataFast</span>() {
+    <span class="code-kw">int</span> x <span class="code-op">=</span> imu_data_count;
+
+    <span class="code-kw">if</span> (x <span class="code-op">&gt;=</span> DATAPOINTS) {
+        collect <span class="code-op">=</span> <span class="code-num">0</span>;
+        <span class="code-kw">return</span>;
+    }
+
+    <span class="code-kw">float</span> a_pitch, a_roll;
+    <span class="code-kw">float</span> curr_time;
+
+    myICM.<span class="code-fn">getAGMT</span>();
+    curr_time <span class="code-op">=</span> <span class="code-fn">millis</span>();
+    dt <span class="code-op">=</span> (curr_time <span class="code-op">-</span> last_time) <span class="code-op">/</span> <span class="code-num">1000.0</span>;
+    last_time <span class="code-op">=</span> curr_time;
+    millis_arr[x] <span class="code-op">=</span> curr_time;
+
+    a_roll  <span class="code-op">=</span> <span class="code-fn">atan2</span>(myICM.<span class="code-fn">accX</span>(), myICM.<span class="code-fn">accZ</span>()) <span class="code-op">*</span> <span class="code-num">180</span> <span class="code-op">/</span> M_PI;
+    roll_accelerometer[x] <span class="code-op">=</span> a_roll;
+    a_pitch <span class="code-op">=</span> <span class="code-fn">atan2</span>(myICM.<span class="code-fn">accY</span>(), myICM.<span class="code-fn">accZ</span>()) <span class="code-op">*</span> <span class="code-num">180</span> <span class="code-op">/</span> M_PI;
+    pitch_accelerometer[x] <span class="code-op">=</span> a_pitch;
+
+    lpf_roll <span class="code-op">=</span> alpha <span class="code-op">*</span> a_roll <span class="code-op">+</span> (<span class="code-num">1.0</span> <span class="code-op">-</span> alpha) <span class="code-op">*</span> lpf_roll;
+    lpf_roll_arr[x] <span class="code-op">=</span> lpf_roll;
+    lpf_pitch <span class="code-op">=</span> alpha <span class="code-op">*</span> a_pitch <span class="code-op">+</span> (<span class="code-num">1.0</span> <span class="code-op">-</span> alpha) <span class="code-op">*</span> lpf_pitch;
+    lpf_pitch_arr[x] <span class="code-op">=</span> lpf_pitch;
+
+    g_roll <span class="code-op">+=</span> <span class="code-num">-1</span> <span class="code-op">*</span> myICM.<span class="code-fn">gyrY</span>() <span class="code-op">*</span> dt;
+    g_pitch <span class="code-op">+=</span> myICM.<span class="code-fn">gyrX</span>() <span class="code-op">*</span> dt;
+    g_yaw <span class="code-op">+=</span> myICM.<span class="code-fn">gyrZ</span>() <span class="code-op">*</span> dt;
+
+    roll_gyro[x]  <span class="code-op">=</span> g_roll;
+    pitch_gyro[x] <span class="code-op">=</span> g_pitch;
+    yaw_gyro[x]   <span class="code-op">=</span> g_yaw;
+
+    cf_pitch <span class="code-op">=</span> alpha <span class="code-op">*</span> (cf_pitch <span class="code-op">+</span> g_pitch <span class="code-op">*</span> dt) <span class="code-op">*</span> (<span class="code-num">1.0</span> <span class="code-op">-</span> alpha) <span class="code-op">+</span> lpf_pitch;
+    cf_roll <span class="code-op">=</span> alpha <span class="code-op">*</span> (cf_roll <span class="code-op">+</span> g_roll <span class="code-op">*</span> dt) <span class="code-op">*</span> (<span class="code-num">1.0</span> <span class="code-op">-</span> alpha) <span class="code-op">+</span> lpf_roll;
+
+    cf_roll_arr[x] <span class="code-op">=</span> cf_roll;
+    cf_pitch_arr[x] <span class="code-op">=</span> cf_pitch;
+}</code></pre>
+                </div>
+            </div>
+            <p>With this code, I was able to sample for more than 5 seconds:</p>
+            <img class="media-img" src="media/lab2/duration.png" alt="Sampling duration over 5 seconds">
+            <p>Additionally, I added another global variable that captures the number of times the main loop ran.</p>
+            <div class="gist">
+                <div class="gist-header">
+                    <span class="file-name">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M4 5.5h16M4 12h16M4 18.5h16"/>
+                        </svg>
+                        Main Loop
+                    </span>
+                    <span class="lang-tag">C</span>
+                </div>
+                <div class="gist-body">
+                    <pre><code class="code-block"><span class="code-kw">void</span> <span class="code-fn">loop</span>()
+{
+    BLEDevice central <span class="code-op">=</span> BLE.<span class="code-fn">central</span>();
+
+    <span class="code-kw">if</span> (central) {
+        <span class="code-kw">while</span> (central.<span class="code-fn">connected</span>()) {
+            <span class="code-fn">write_data</span>();
+
+            <span class="code-kw">if</span> (collect <span class="code-op">&amp;&amp;</span> myICM.<span class="code-fn">dataReady</span>()) {
+                <span class="code-fn">getIMUDataFast</span>();
+                imu_data_count<span class="code-op">++</span>;
+            }
+            total_loops<span class="code-op">++</span>;
+
+            <span class="code-fn">read_data</span>();
+        }
+
+        Serial.<span class="code-fn">println</span>(<span class="code-str">"Disconnected"</span>);
+    }
+}</code></pre>
+                </div>
+            </div>
+            <img class="media-img" src="media/lab2/loops_vs_collection.png" alt="Main loop iterations vs data collection count">
+            <p>As we can see, the number of main loops that ran is much greater than the number of data points that were collected.</p>
+
+            <hr class="task-divider">
+
+            <h3>Data Storage</h3>
+            <p>It made sense to store accelerometer and gyroscope data in separate arrays to make data handling easier. In total, there were actually 11 different arrays for storing data. This makes it easier to easily choose which sensor data I want to work with in the code.</p>
+            <div class="gist">
+                <div class="gist-header">
+                    <span class="file-name">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M4 5.5h16M4 12h16M4 18.5h16"/>
+                        </svg>
+                        Data Arrays
+                    </span>
+                    <span class="lang-tag">C</span>
+                </div>
+                <div class="gist-body">
+                    <pre><code class="code-block"><span class="code-kw">float</span> millis_arr[DATAPOINTS];
+<span class="code-kw">float</span> roll_accelerometer[DATAPOINTS];
+<span class="code-kw">float</span> pitch_accelerometer[DATAPOINTS];
+<span class="code-kw">float</span> lpf_roll_arr[DATAPOINTS];
+<span class="code-kw">float</span> lpf_pitch_arr[DATAPOINTS];
+<span class="code-kw">float</span> roll_gyro[DATAPOINTS];
+<span class="code-kw">float</span> pitch_gyro[DATAPOINTS];
+<span class="code-kw">float</span> yaw_gyro[DATAPOINTS];
+<span class="code-kw">float</span> cf_roll_arr[DATAPOINTS];
+<span class="code-kw">float</span> cf_pitch_arr[DATAPOINTS];
+<span class="code-kw">float</span> cf_yaw_arr[DATAPOINTS];</code></pre>
+                </div>
+            </div>
+            <p>Each of these arrays stores floats. I decided to use floats over any other datatype because I will be able to store pretty accurate readings. A double is 8 bytes, while a float is only 4, and the level of accuracy is negligible. One datapoint consists of 11 floats, so that gives us 11 * 4 bytes = 44 bytes per datapoint.</p>
+            <img class="media-img" src="media/lab2/remaining.png" alt="Remaining memory on Artemis board">
+            <p>There are 246520 bytes of space left, therefore we can store <span class="code-inline">246520 / 44 = 5602</span> data points.</p>
+            <img class="media-img" src="media/lab2/avg_time_diff.png" alt="Average time difference between samples">
+            <p><span class="code-inline">3 * 5602 = 16806 / 1000 = 16.806</span> seconds of data collection!</p>
+        </section>
+
+        <hr class="section-divider">
+
+        <section id="stunts">
+            <h2>Stunts!</h2>
+            <h3>Ramp Stunt</h3>
+            <div class="video-embed">
+                <iframe width="560" height="315" src="https://www.youtube.com/embed/H2eNpmpH2dA?si=KRBHeZ2hpYqGPwjO" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+            </div>
+            <h3>Soccer</h3>
+            <div class="video-embed">
+                <iframe width="560" height="315" src="https://www.youtube.com/embed/ZEqbP1SPe7c?si=g4SaL9c0g6wDASbl" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+            </div>
+            <h3>Blooper</h3>
+            <div class="video-embed">
+                <iframe width="560" height="315" src="https://www.youtube.com/embed/-vECAm-FQXE?si=OnzS_QBRQP_q16XY" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+            </div>
+        </section>
+
+        <hr class="section-divider">
+
+        <section id="collaboration">
+            <h2>Collaboration</h2>
+            <p>During this project I referenced Lucca Correia's page for guidance with filter implementation and data storage strategies. At first, I did my low pass filtering in the python code, but then decided against it. I referenced Lucca's page for ideas for how to implement the filter and store my data effectively. I also was confused about how to speed up the main loop, and was able to understand how to do that better with his page.</p>
+            <p>Additionally, I used Claude for the python graphing code. The code for making graphs with matplot is tedious and repetitive, but with Claude, I would simply ask for the code for plotting specific data. An example prompt would be: "I want to plot pitch from accelerometer, gyroscope, lpf, and cf data. I already have the csv with the data." I also used Claude for help with the notification_handler function which takes incoming data from the board and puts it into a csv file.</p>
+            <p>Finally, I vibecoded the entire lab page. I document all my progress in a google doc, saving images and building an outline. At the end, I paste the outline into Claude Code, and get formatted html.</p>
+        </section>
+    </main>
+</body>
+</html>
