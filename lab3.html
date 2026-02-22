@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Lab 3: Time of Flight Sensors</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        :root {
+            --bg-color: #10151b;
+            --text-color: #e6d8c0;
+            --card-bg: #161c24;
+            --card-border: #1f262f;
+            --card-outline: #26303a;
+            --muted: rgba(230, 216, 192, 0.8);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 1.05rem;
+            line-height: 1.8;
+            min-height: 100vh;
+        }
+
+        nav {
+            width: fit-content;
+            max-width: 720px;
+            margin: 28px auto 48px;
+            padding: 12px 18px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            outline: 1px solid var(--card-outline);
+            border-radius: 14px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+        }
+
+        nav a {
+            color: var(--text-color);
+            text-decoration: none;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 12px;
+            border-radius: 10px;
+            transition: background-color 0.2s ease, transform 0.2s ease;
+        }
+
+        nav a:hover {
+            background-color: rgba(230, 216, 192, 0.12);
+            transform: translateY(-1px);
+        }
+
+        nav svg {
+            width: 28px;
+            height: 28px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 1.6;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        main {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 24px 96px;
+            display: grid;
+            gap: 36px;
+        }
+
+        header h1 {
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            color: #9ae6c4;
+        }
+
+        header p {
+            color: var(--muted);
+        }
+
+        section {
+            background: transparent;
+            border: none;
+            outline: none;
+            border-radius: 0;
+            padding: 0;
+            box-shadow: none;
+        }
+
+        h2 {
+            font-size: 1.75rem;
+            margin: 0 0 14px;
+            color: #9ae6c4;
+        }
+
+        h3 {
+            font-size: 1.3rem;
+            margin: 0 0 12px;
+            color: #9ae6c4;
+        }
+
+        p {
+            margin: 0 0 14px;
+        }
+
+        ul {
+            margin: 12px 0 0 20px;
+            color: var(--muted);
+        }
+
+        .list-spaced li {
+            margin-bottom: 10px;
+        }
+
+        .subdued {
+            color: var(--muted);
+        }
+
+        a.student-link {
+            color: #8de4b2;
+            text-decoration: none;
+            border-bottom: 1px solid rgba(141, 228, 178, 0.4);
+            transition: color 0.2s ease, border-color 0.2s ease;
+        }
+
+        a.student-link:hover {
+            color: #a6f0c7;
+            border-color: rgba(166, 240, 199, 0.7);
+        }
+
+        a.student-link:visited {
+            color: #8de4b2;
+            border-color: rgba(141, 228, 178, 0.4);
+        }
+
+        .gist {
+            margin: 16px 0;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid #1f2630;
+            background: linear-gradient(180deg, #131c28 0%, #101722 100%);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 10px 22px rgba(0, 0, 0, 0.35);
+        }
+
+        .gist-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 12px;
+            background: #0f1620;
+            border-bottom: 1px solid #1f2630;
+            color: rgba(230, 216, 192, 0.9);
+            font-size: 1rem;
+        }
+
+        .gist-header .file-name {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .gist-header svg {
+            width: 18px;
+            height: 18px;
+            stroke: currentColor;
+            fill: none;
+        }
+
+        .lang-tag {
+            background: #1f2a36;
+            color: #cdd7e1;
+            border: 1px solid #2d3744;
+            padding: 2px 8px;
+            border-radius: 999px;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .gist-body {
+            padding: 14px;
+            background: #0f1722;
+        }
+
+        pre {
+            margin: 0;
+            padding: 0;
+            overflow-x: auto;
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+            font-size: 0.98rem;
+            line-height: 1.6;
+            color: #e9edf5;
+        }
+
+        code {
+            background: transparent;
+        }
+
+        .code-block {
+            display: block;
+            white-space: pre;
+        }
+
+        .code-inline {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 6px;
+            background: #0f1722;
+            border: 1px solid #1f2630;
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+            font-size: 0.95rem;
+            color: #e03a4f;
+            line-height: 1.3;
+        }
+
+        .code-kw { color: #8ad1ff; }
+        .code-fn { color: #a3d9a5; }
+        .code-str { color: #ffd48a; }
+        .code-num { color: #f3a5ff; }
+        .code-comment { color: #8da0b3; }
+        .code-op { color: #c4b5ff; }
+
+        .media-img {
+            display: block;
+            max-width: 760px;
+            max-height: 480px;
+            width: auto;
+            height: auto;
+            margin: 10px auto 6px;
+            border-radius: 10px;
+            border: 1px solid #2d3642;
+            background: #0f1722;
+            padding: 6px;
+        }
+
+        .media-placeholder {
+            margin: 10px 0;
+            padding: 14px;
+            border: 1px dashed #3a4656;
+            border-radius: 10px;
+            color: #9aa5b1;
+            text-align: center;
+        }
+
+        .video-embed {
+            position: relative;
+            width: 100%;
+            max-width: 860px;
+            aspect-ratio: 11 / 3;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #2d3642;
+            background: #0f1722;
+            margin: 12px auto;
+        }
+
+        .video-embed iframe,
+        .video-embed video {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+            object-fit: contain;
+        }
+
+        .video-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 14px;
+            border-radius: 10px;
+            background: #0f1722;
+            border: 1px solid #2d3642;
+            color: #8de4b2;
+            text-decoration: none;
+            transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+            margin: 8px 0 4px;
+        }
+
+        .video-link:hover {
+            background: #152033;
+            border-color: #3a4a5d;
+            color: #a6f0c7;
+        }
+
+        .gist-embed {
+            margin: 18px 0;
+        }
+
+        .section-divider {
+            border: 0;
+            height: 1px;
+            background: #2e3641;
+            margin: 8px 0 28px;
+        }
+
+        .task-divider {
+            border: 0;
+            height: 1px;
+            background: none;
+            border-top: 1px dashed #3b4552;
+            margin: 24px 0;
+        }
+
+        .callout {
+            border-left: 4px solid #9ae6c4;
+            padding: 10px 14px;
+            background: #0f1623;
+            border-radius: 10px;
+            color: var(--muted);
+            margin: 10px 0 16px;
+        }
+
+        .img-grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin: 10px 0;
+        }
+
+        .img-grid-2 img {
+            width: 100%;
+            max-width: none;
+            margin: 0;
+        }
+
+        @media (max-width: 640px) {
+            nav {
+                flex-wrap: wrap;
+            }
+            .img-grid-2 {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="index.html">
+            <svg aria-hidden="true" viewBox="0 0 24 24">
+                <path d="M4 10.75 12 4l8 6.75"/>
+                <path d="M5.5 11.75V20h4.5v-4.75h4V20h4.5v-8.25"/>
+            </svg>
+            <span>Home</span>
+        </a>
+        <a href="labs.html">
+            <svg aria-hidden="true" viewBox="0 0 24 24">
+                <path d="M4.5 6.5h5l1.5 2H19a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1h-14a1 1 0 0 1-1-1v-9a1 1 0 0 1 1-1Z"/>
+            </svg>
+            <span>Labs</span>
+        </a>
+    </nav>
+
+    <main>
+        <header>
+            <h1>Lab 3: Time of Flight Sensors</h1>
+            <p>Goal: Equip the robot with distance sensors, speedier sampling for faster driving.</p>
+        </header>
+
+        <section id="prelab">
+            <h2>Prelab</h2>
+            <p>There will be two Time-of-Flight (ToF) sensors. Since we cannot address the two sensors individually, I decided to change the address programmatically when the board is powered. This way, I won't get any latency in my readings by continuously enabling and disabling the sensors.</p>
+            <p>I am planning on placing one ToF sensor at the front of the car, and the other will go on the side. This way, I can detect obstacles in front of my car, as well as any walls to the side. Since I won't have a sensor on the back, the robot won't detect any obstacles if it drives backwards. I also won't detect anything on the opposite side of the side ToF sensor.</p>
+        </section>
+
+        <hr class="section-divider">
+
+        <section id="tasks">
+            <h2>Tasks</h2>
+
+            <!-- Task 1 -->
+            <h3>Task 1: Battery Connection</h3>
+            <p>First, I get the JST Connector and battery, separate the wires and cut them one at a time, then solder the battery wires to the JST jumper wires. With heat shrink, I insulate any exposed wire.</p>
+            <img class="media-img" src="media/lab3/soldered_wires.png" alt="Soldered battery wires">
+            <p>Finally, I power up the Artemis board with the battery and no connection to my laptop, then make sure I can send messages!</p>
+            <img class="media-img" src="media/lab3/artemis_and_battery.png" alt="Artemis powered by battery">
+            <div class="video-embed">
+                <iframe src="https://www.youtube.com/embed/AqkE73U2Pro?si=3cAYrOynkZlzkQvi" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+            </div>
+
+            <hr class="task-divider">
+
+            <!-- Task 2 -->
+            <h3>Task 2: Sensor Library Installation</h3>
+            <p>Installed the <span class="code-inline">SparkFun VL53L1X 4m Laser Distance Sensor</span> library via the Arduino Library Manager.</p>
+
+            <hr class="task-divider">
+
+            <!-- Task 3 -->
+            <h3>Task 3: Breakout-Board &amp; Artemis</h3>
+            <p>Connected the QWIIC break-out board to the Artemis.</p>
+            <img class="media-img" src="media/lab3/qwiic_and_artemis.png" alt="QWIIC breakout board connected to Artemis">
+
+            <hr class="task-divider">
+
+            <!-- Task 4 -->
+            <h3>Task 4: First ToF Sensor</h3>
+            <p>When connecting the ToF sensor to the QWIIC board, I decided to use one of the long cables. Per the manual, I needed to connect the yellow wire to SCL and blue wire to SDA.</p>
+            <div class="img-grid-2">
+                <img class="media-img" src="media/lab3/sda_scl.png" alt="SDA and SCL wiring">
+                <img class="media-img" src="media/lab3/tof_and_breakout.png" alt="ToF sensor connected to QWIIC breakout">
+            </div>
+
+            <hr class="task-divider">
+
+            <!-- Task 5 -->
+            <h3>Task 5: Finding the Sensor</h3>
+            <p>To find the sensor, I browsed the I2C channel using the <span class="code-inline">Example05_wire_I2C</span> file. After running the code, I get the following address/output:</p>
+            <div class="img-grid-2">
+                <img class="media-img" src="media/lab3/I2C_scan.png" alt="I2C scan output">
+                <img class="media-img" src="media/lab3/I2C_address.png" alt="I2C address output">
+            </div>
+            <p>On the data sheet, the default address is <span class="code-inline">0x52</span>. The data sheet lists the full 8-bit value, which includes a R/W bit at the very end. Since the ToF library handles the R/W bit automatically, we only use the 7-bit address, or <span class="code-inline">0x29</span>.</p>
+            <div class="gist">
+                <div class="gist-header">
+                    <span class="file-name">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M4 5.5h16M4 12h16M4 18.5h16"/>
+                        </svg>
+                        Address Conversion
+                    </span>
+                    <span class="lang-tag">Math</span>
+                </div>
+                <div class="gist-body">
+                    <pre><code class="code-block">0x52 = 0101 0010
+0x29 =  010 1001
+
+0x52 >> 1 = 0x29</code></pre>
+                </div>
+            </div>
+
+            <hr class="task-divider">
+
+            <!-- Task 6 -->
+            <h3>Task 6: ToF Modes</h3>
+            <p>The ToF sensor has three ranging modes:</p>
+            <div class="gist">
+                <div class="gist-header">
+                    <span class="file-name">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M4 5.5h16M4 12h16M4 18.5h16"/>
+                        </svg>
+                        Ranging Modes
+                    </span>
+                    <span class="lang-tag">C</span>
+                </div>
+                <div class="gist-body">
+                    <pre><code class="code-block">.<span class="code-fn">setDistanceModeShort</span>();    <span class="code-comment">// 1.3 m</span>
+.<span class="code-fn">setDistanceModeMedium</span>();   <span class="code-comment">// 3.0 m</span>
+.<span class="code-fn">setDistanceModeLong</span>();     <span class="code-comment">// 4.0 m, default</span></code></pre>
+                </div>
+            </div>
+            <p>Short mode would be very reliable for objects close to the robot and would be least affected by lighting conditions. Medium is a middle ground that is more affected by light but captures further objects. Long mode provides the maximum range but is most affected by ambient light. I chose <strong>Long</strong> mode since classroom lighting shouldn't significantly affect readings.</p>
+
+            <hr class="task-divider">
+
+            <!-- Task 7 -->
+            <h3>Task 7: Testing ToF Mode</h3>
+            <p>To test the ToF sensor, I made the following setup. Due to space constraints, I tested the short mode.</p>
+            <img class="media-img" src="media/lab3/short_mode_setup.png" alt="Short mode test setup">
+            <p>And ran <span class="code-inline">..\Arduino\libraries\SparkFun_VL53L1X_4m_Laser_Distance_Sensor\examples\Example1_ReadDistance</span></p>
+
+            <h3>Range Test</h3>
+            <p>Since I am testing with the short mode, the max range is 51 inches. As we can see in the graph below, sensor 1 was able to reach ~48 inches. I was moving a box farther away from the sensors, which is why sensor 2 probably started catching a different reading.</p>
+            <img class="media-img" src="media/lab3/range_test.png" alt="Range test results">
+
+            <h3>Repeatability</h3>
+            <p>As we can see, the readings from the sensors were very close and stayed consistent for the time duration.</p>
+            <img class="media-img" src="media/lab3/repeatability_test.png" alt="Repeatability test results">
+
+            <hr class="task-divider">
+
+            <!-- Task 8 -->
+            <h3>Task 8: Both ToF Sensors</h3>
+            <p>In order to work with two ToF sensors, I need to be able to address them separately. Since the ToF sensors share the same default address, I chose to change one of the addresses programmatically at startup. I also connected pin A0 on the Artemis to the XSHUT pin. The setup and wiring diagram are below.</p>
+            <div class="img-grid-2">
+                <img class="media-img" src="media/lab3/both_tof_sensors.png" alt="Both ToF sensors setup">
+                <img class="media-img" src="media/lab3/wiring_diagram.png" alt="Wiring diagram">
+            </div>
+            <p>I added the code below to handle the address change.</p>
+            <div class="gist">
+                <div class="gist-header">
+                    <span class="file-name">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M4 5.5h16M4 12h16M4 18.5h16"/>
+                        </svg>
+                        Address Change
+                    </span>
+                    <span class="lang-tag">C</span>
+                </div>
+                <div class="gist-body">
+                    <pre><code class="code-block"><span class="code-fn">pinMode</span>(SHUTDOWN_PIN, OUTPUT);
+<span class="code-fn">digitalWrite</span>(SHUTDOWN_PIN, LOW);
+<span class="code-fn">delay</span>(<span class="code-num">10</span>);
+
+tofSensor1.<span class="code-fn">begin</span>();
+tofSensor1.<span class="code-fn">setI2CAddress</span>(<span class="code-num">0x30</span>);
+
+<span class="code-fn">digitalWrite</span>(SHUTDOWN_PIN, HIGH);
+<span class="code-fn">delay</span>(<span class="code-num">10</span>);
+
+tofSensor2.<span class="code-fn">begin</span>();
+
+tofSensor1.<span class="code-fn">setDistanceModeShort</span>();
+tofSensor2.<span class="code-fn">setDistanceModeShort</span>();</code></pre>
+                </div>
+            </div>
+            <p>I also wrote a new command to visualize readings from both ToF sensors.</p>
+            <div class="gist">
+                <div class="gist-header">
+                    <span class="file-name">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M4 5.5h16M4 12h16M4 18.5h16"/>
+                        </svg>
+                        BOTH_TOF_READINGS
+                    </span>
+                    <span class="lang-tag">C</span>
+                </div>
+                <div class="gist-body">
+                    <pre><code class="code-block"><span class="code-kw">case</span> GET_TOF_DATA: {
+    <span class="code-kw">float</span> distance1;
+    <span class="code-kw">float</span> distance2;
+
+    <span class="code-kw">for</span> (<span class="code-kw">int</span> i <span class="code-op">=</span> <span class="code-num">0</span>; i <span class="code-op">&lt;</span> DATAPOINTS; i<span class="code-op">++</span>) {
+        tofSensor1.<span class="code-fn">startRanging</span>();
+        tofSensor2.<span class="code-fn">startRanging</span>();
+
+        <span class="code-kw">while</span> (<span class="code-op">!</span>tofSensor1.<span class="code-fn">checkForDataReady</span>()) {}
+        distance1 <span class="code-op">=</span> tofSensor1.<span class="code-fn">getDistance</span>();
+        tofSensor1.<span class="code-fn">clearInterrupt</span>();
+        tofSensor1.<span class="code-fn">stopRanging</span>();
+
+        <span class="code-kw">while</span> (<span class="code-op">!</span>tofSensor2.<span class="code-fn">checkForDataReady</span>()) {}
+        distance2 <span class="code-op">=</span> tofSensor2.<span class="code-fn">getDistance</span>();
+        tofSensor2.<span class="code-fn">clearInterrupt</span>();
+        tofSensor2.<span class="code-fn">stopRanging</span>();
+
+        distance1 <span class="code-op">=</span> distance1 <span class="code-op">*</span> <span class="code-num">0.0393701</span>;
+        distance2 <span class="code-op">=</span> distance2 <span class="code-op">*</span> <span class="code-num">0.0393701</span>;
+
+        tof_one_arr[i] <span class="code-op">=</span> distance1;
+        tof_two_arr[i] <span class="code-op">=</span> distance2;
+        millis_arr[i]  <span class="code-op">=</span> <span class="code-fn">millis</span>();
+    }
+
+    <span class="code-comment">/* Send data over bluetooth */</span>
+    <span class="code-kw">for</span> (<span class="code-kw">int</span> j <span class="code-op">=</span> <span class="code-num">0</span>; j <span class="code-op">&lt;</span> DATAPOINTS; j<span class="code-op">++</span>) {
+        tx_estring_value.<span class="code-fn">clear</span>();
+        tx_estring_value.<span class="code-fn">append</span>(millis_arr[j]);
+        tx_estring_value.<span class="code-fn">append</span>(<span class="code-str">","</span>);
+        tx_estring_value.<span class="code-fn">append</span>(tof_one_arr[j]);
+        tx_estring_value.<span class="code-fn">append</span>(<span class="code-str">","</span>);
+        tx_estring_value.<span class="code-fn">append</span>(tof_two_arr[j]);
+        tx_characteristic_string.<span class="code-fn">writeValue</span>(tx_estring_value.<span class="code-fn">c_str</span>());
+    }
+}
+    <span class="code-kw">break</span>;</code></pre>
+                </div>
+            </div>
+            <p>With all of the code above, I can now get readings from both ToF sensors!</p>
+            <img class="media-img" src="media/lab3/both_tof_readings.png" alt="Both ToF sensors readings">
+
+            <hr class="task-divider">
+
+            <!-- Task 9 -->
+            <h3>Task 9: Printing to the Serial</h3>
+            <p>In future labs, code needs to run really quickly. For this task, I wrote a loop that only prints ToF data if it is available. I also print the timestamp every loop, so we can observe how often the ToF data is available.</p>
+            <div class="gist">
+                <div class="gist-header">
+                    <span class="file-name">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M4 5.5h16M4 12h16M4 18.5h16"/>
+                        </svg>
+                        Printing to Serial
+                    </span>
+                    <span class="lang-tag">C</span>
+                </div>
+                <div class="gist-body">
+                    <pre><code class="code-block"><span class="code-kw">void</span> <span class="code-fn">loop</span>() {
+    <span class="code-kw">int</span> distance1;
+    <span class="code-kw">int</span> distance2;
+    <span class="code-kw">float</span> distance1Inches;
+    <span class="code-kw">float</span> distance2Inches;
+
+    tofSensor1.<span class="code-fn">startRanging</span>();
+    tofSensor2.<span class="code-fn">startRanging</span>();
+
+    <span class="code-kw">if</span> (tofSensor1.<span class="code-fn">checkForDataReady</span>()) {
+        <span class="code-kw">int</span> distance1 <span class="code-op">=</span> tofSensor1.<span class="code-fn">getDistance</span>();
+        tofSensor1.<span class="code-fn">clearInterrupt</span>();
+        tofSensor1.<span class="code-fn">stopRanging</span>();
+        Serial.<span class="code-fn">print</span>(<span class="code-str">"Distance 1: "</span>);
+        Serial.<span class="code-fn">print</span>(distance1);
+        Serial.<span class="code-fn">println</span>(<span class="code-str">"   "</span>);
+    }
+
+    <span class="code-kw">if</span> (tofSensor2.<span class="code-fn">checkForDataReady</span>()) {
+        <span class="code-kw">int</span> distance2 <span class="code-op">=</span> tofSensor2.<span class="code-fn">getDistance</span>();
+        tofSensor2.<span class="code-fn">clearInterrupt</span>();
+        tofSensor2.<span class="code-fn">stopRanging</span>();
+        Serial.<span class="code-fn">print</span>(<span class="code-str">"Distance 2: "</span>);
+        Serial.<span class="code-fn">print</span>(distance2);
+        Serial.<span class="code-fn">println</span>(<span class="code-str">"   "</span>);
+    }
+
+    Serial.<span class="code-fn">print</span>(<span class="code-str">"T: "</span>);
+    Serial.<span class="code-fn">print</span>(<span class="code-fn">millis</span>());
+    Serial.<span class="code-fn">print</span>(<span class="code-str">"   "</span>);
+    Serial.<span class="code-fn">println</span>();
+}</code></pre>
+                </div>
+            </div>
+            <p>In the images below, we can observe the time between ToF1 and ToF2 readings.</p>
+            <div class="img-grid-2" style="max-width: 560px; margin: 10px auto;">
+                <img class="media-img" style="max-height: none;" src="media/lab3/tof1_timing.png" alt="ToF1 timing between readings">
+                <img class="media-img" style="max-height: none;" src="media/lab3/tof2_timing.png" alt="ToF2 timing between readings">
+            </div>
+            <p>ToF1 captures data every ~93ms, while ToF2 captures data every ~92ms.</p>
+
+            <hr class="task-divider">
+
+            <!-- Task 10 -->
+            <h3>Task 10: Time Stamped Sensor Data</h3>
+            <p>Finally, I edited previous lab code to send both IMU and ToF sensor data to my laptop over Bluetooth.</p>
+            <div class="gist">
+                <div class="gist-header">
+                    <span class="file-name">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M4 5.5h16M4 12h16M4 18.5h16"/>
+                        </svg>
+                        IMU &amp; ToF Readings
+                    </span>
+                    <span class="lang-tag">C</span>
+                </div>
+                <div class="gist-body">
+                    <pre><code class="code-block"><span class="code-kw">case</span> SEND_IMU_AND_TOF_DATA: {
+    Serial.<span class="code-fn">print</span>(<span class="code-str">"Sending IMU "</span>);
+    Serial.<span class="code-fn">print</span>(imu_data_count);
+    Serial.<span class="code-fn">print</span>(<span class="code-str">" samples and TOF "</span>);
+    Serial.<span class="code-fn">print</span>(tof_data_count);
+    Serial.<span class="code-fn">println</span>(<span class="code-str">" samples"</span>);
+
+    <span class="code-kw">for</span> (<span class="code-kw">int</span> j <span class="code-op">=</span> <span class="code-num">0</span>; j <span class="code-op">&lt;</span> imu_data_count; j<span class="code-op">++</span>) {
+        tx_estring_value.<span class="code-fn">clear</span>();
+        tx_estring_value.<span class="code-fn">append</span>(<span class="code-str">"IMU,"</span>);
+        tx_estring_value.<span class="code-fn">append</span>(imu_millis_arr[j]);
+        tx_estring_value.<span class="code-fn">append</span>(<span class="code-str">","</span>);
+        tx_estring_value.<span class="code-fn">append</span>(roll_accelerometer[j]);
+        tx_estring_value.<span class="code-fn">append</span>(<span class="code-str">","</span>);
+        tx_estring_value.<span class="code-fn">append</span>(pitch_accelerometer[j]);
+        tx_estring_value.<span class="code-fn">append</span>(<span class="code-str">","</span>);
+        tx_estring_value.<span class="code-fn">append</span>(lpf_roll_arr[j]);
+        tx_estring_value.<span class="code-fn">append</span>(<span class="code-str">","</span>);
+        tx_estring_value.<span class="code-fn">append</span>(lpf_pitch_arr[j]);
+        tx_estring_value.<span class="code-fn">append</span>(<span class="code-str">","</span>);
+        tx_estring_value.<span class="code-fn">append</span>(roll_gyro[j]);
+        tx_estring_value.<span class="code-fn">append</span>(<span class="code-str">","</span>);
+        tx_estring_value.<span class="code-fn">append</span>(pitch_gyro[j]);
+        tx_estring_value.<span class="code-fn">append</span>(<span class="code-str">","</span>);
+        tx_estring_value.<span class="code-fn">append</span>(yaw_gyro[j]);
+        tx_estring_value.<span class="code-fn">append</span>(<span class="code-str">","</span>);
+        tx_estring_value.<span class="code-fn">append</span>(cf_roll_arr[j]);
+        tx_estring_value.<span class="code-fn">append</span>(<span class="code-str">","</span>);
+        tx_estring_value.<span class="code-fn">append</span>(cf_pitch_arr[j]);
+        tx_characteristic_string.<span class="code-fn">writeValue</span>(tx_estring_value.<span class="code-fn">c_str</span>());
+    }
+
+    <span class="code-kw">for</span> (<span class="code-kw">int</span> j <span class="code-op">=</span> <span class="code-num">0</span>; j <span class="code-op">&lt;</span> tof_data_count; j<span class="code-op">++</span>) {
+        tx_estring_value.<span class="code-fn">clear</span>();
+        tx_estring_value.<span class="code-fn">append</span>(<span class="code-str">"TOF,"</span>);
+        tx_estring_value.<span class="code-fn">append</span>(tof_millis_arr[j]);
+        tx_estring_value.<span class="code-fn">append</span>(<span class="code-str">","</span>);
+        tx_estring_value.<span class="code-fn">append</span>(tof_one_arr[j]);
+        tx_estring_value.<span class="code-fn">append</span>(<span class="code-str">","</span>);
+        tx_estring_value.<span class="code-fn">append</span>(tof_two_arr[j]);
+        tx_characteristic_string.<span class="code-fn">writeValue</span>(tx_estring_value.<span class="code-fn">c_str</span>());
+    }
+
+    <span class="code-kw">break</span>;
+}</code></pre>
+                </div>
+            </div>
+            <img class="media-img" src="media/lab3/imu_and_tof_data_csv.png" alt="IMU and ToF data CSV">
+
+            <h3>ToF and IMU</h3>
+            <img class="media-img" src="media/lab3/imu_and_tof.png" alt="IMU and ToF data vs. time">
+        </section>
+
+        <hr class="section-divider">
+
+        <section id="overview">
+            <h2>Overview</h2>
+            <p>In this lab, I set up Time-of-Flight sensors, making sure I could get accurate readings from two separate sensors, and send them to the laptop over Bluetooth. At the start of the lab, I soldered the battery with a connector, and the QWIIC cables to the ToF sensors, which took a decent amount of time. I ran into problems when trying to connect to my Artemis board &ndash; my code would loop forever if the IMU was not connected, which didn't let me establish a connection to the board. The challenging part of the lab for me was soldering the wires, and writing the code to change the addresses.</p>
+        </section>
+
+        <hr class="section-divider">
+
+        <section id="collaboration">
+            <h2>References</h2>
+            <p>I referenced <a class="student-link" href="https://correial.github.io/LuccaFastRobots/" target="_blank" rel="noopener">Lucca Correia</a>'s page for help with programmatically changing the ToF address code, as well as <a class="student-link" href="https://boltstrike.github.io/pages/lab3.html" target="_blank" rel="">Aidan Derocher</a>'s page for soldering the QWIIC wires to the ToF sensors correctly. I used Claude for help with graphing code as well as styling my website. Finally, I referenced the data sheets to get the default I2C address and other sensor information.</p>
+        </section>
+    </main>
+</body>
+</html>
