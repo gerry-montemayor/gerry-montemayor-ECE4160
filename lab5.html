@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Lab 5: Linear PID Control and Linear Interpolation</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        :root {
+            --bg-color: #10151b;
+            --text-color: #e6d8c0;
+            --card-bg: #161c24;
+            --card-border: #1f262f;
+            --card-outline: #26303a;
+            --muted: rgba(230, 216, 192, 0.8);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 1.05rem;
+            line-height: 1.8;
+            min-height: 100vh;
+        }
+
+        nav {
+            width: fit-content;
+            max-width: 720px;
+            margin: 28px auto 48px;
+            padding: 12px 18px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            outline: 1px solid var(--card-outline);
+            border-radius: 14px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+        }
+
+        nav a {
+            color: var(--text-color);
+            text-decoration: none;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 12px;
+            border-radius: 10px;
+            transition: background-color 0.2s ease, transform 0.2s ease;
+        }
+
+        nav a:hover {
+            background-color: rgba(230, 216, 192, 0.12);
+            transform: translateY(-1px);
+        }
+
+        nav svg {
+            width: 28px;
+            height: 28px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 1.6;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        main {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 24px 96px;
+            display: grid;
+            gap: 36px;
+        }
+
+        header h1 {
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            color: #9ae6c4;
+        }
+
+        header p {
+            color: var(--muted);
+        }
+
+        section {
+            background: transparent;
+            border: none;
+            outline: none;
+            border-radius: 0;
+            padding: 0;
+            box-shadow: none;
+        }
+
+        h2 {
+            font-size: 1.75rem;
+            margin: 0 0 14px;
+            color: #9ae6c4;
+        }
+
+        h3 {
+            font-size: 1.3rem;
+            margin: 0 0 12px;
+            color: #9ae6c4;
+        }
+
+        p {
+            margin: 0 0 14px;
+        }
+
+        ul {
+            margin: 12px 0 14px 20px;
+            color: var(--muted);
+        }
+
+        ul li {
+            margin-bottom: 6px;
+        }
+
+        .subdued {
+            color: var(--muted);
+        }
+
+        a.student-link {
+            color: #8de4b2;
+            text-decoration: none;
+            border-bottom: 1px solid rgba(141, 228, 178, 0.4);
+            transition: color 0.2s ease, border-color 0.2s ease;
+        }
+
+        a.student-link:hover {
+            color: #a6f0c7;
+            border-color: rgba(166, 240, 199, 0.7);
+        }
+
+        a.student-link:visited {
+            color: #8de4b2;
+            border-color: rgba(141, 228, 178, 0.4);
+        }
+
+        .gist {
+            margin: 16px 0;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid #1f2630;
+            background: linear-gradient(180deg, #131c28 0%, #101722 100%);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 10px 22px rgba(0, 0, 0, 0.35);
+        }
+
+        .gist-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 12px;
+            background: #0f1620;
+            border-bottom: 1px solid #1f2630;
+            color: rgba(230, 216, 192, 0.9);
+            font-size: 1rem;
+        }
+
+        .gist-header .file-name {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .gist-header svg {
+            width: 18px;
+            height: 18px;
+            stroke: currentColor;
+            fill: none;
+        }
+
+        .lang-tag {
+            background: #1f2a36;
+            color: #cdd7e1;
+            border: 1px solid #2d3744;
+            padding: 2px 8px;
+            border-radius: 999px;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .gist-body {
+            padding: 14px;
+            background: #0f1722;
+        }
+
+        pre {
+            margin: 0;
+            padding: 0;
+            overflow-x: auto;
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+            font-size: 0.98rem;
+            line-height: 1.6;
+            color: #e9edf5;
+        }
+
+        code {
+            background: transparent;
+        }
+
+        .code-block {
+            display: block;
+            white-space: pre;
+        }
+
+        .code-inline {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 6px;
+            background: #0f1722;
+            border: 1px solid #1f2630;
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+            font-size: 0.95rem;
+            color: #e03a4f;
+            line-height: 1.3;
+        }
+
+        .code-kw     { color: #8ad1ff; }
+        .code-fn     { color: #a3d9a5; }
+        .code-str    { color: #ffd48a; }
+        .code-num    { color: #f3a5ff; }
+        .code-comment{ color: #8da0b3; }
+        .code-op     { color: #c4b5ff; }
+        .code-type   { color: #8ad1ff; }
+
+        .media-img {
+            display: block;
+            max-width: 760px;
+            max-height: 520px;
+            width: auto;
+            height: auto;
+            margin: 10px auto 16px;
+            border-radius: 10px;
+            border: 1px solid #2d3642;
+            background: #0f1722;
+            padding: 6px;
+        }
+
+        .video-embed {
+            position: relative;
+            width: 100%;
+            max-width: 860px;
+            aspect-ratio: 16 / 9;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #2d3642;
+            background: #0f1722;
+            margin: 12px auto 20px;
+        }
+
+        .video-embed iframe,
+        .video-embed video {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+            object-fit: contain;
+        }
+
+        .video-embed-portrait {
+            position: relative;
+            width: 100%;
+            max-width: 340px;
+            aspect-ratio: 9 / 16;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #2d3642;
+            background: #0f1722;
+            margin: 12px auto 20px;
+        }
+
+        .video-embed-portrait iframe,
+        .video-embed-portrait video {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+            object-fit: contain;
+        }
+
+        .section-divider {
+            border: 0;
+            height: 1px;
+            background: #2e3641;
+            margin: 8px 0 28px;
+        }
+
+        .task-divider {
+            border: 0;
+            height: 1px;
+            background: none;
+            border-top: 1px dashed #3b4552;
+            margin: 28px 0;
+        }
+
+        .callout {
+            border-left: 4px solid #9ae6c4;
+            padding: 10px 14px;
+            background: #0f1623;
+            border-radius: 10px;
+            color: var(--muted);
+            margin: 10px 0 16px;
+        }
+
+        .callout p:last-child {
+            margin-bottom: 0;
+        }
+
+        .kv-list {
+            list-style: none;
+            margin: 0 0 14px;
+            padding: 0;
+        }
+
+        .kv-list li {
+            padding: 4px 0;
+            color: var(--muted);
+        }
+
+        .kv-list li strong {
+            color: var(--text-color);
+        }
+
+        @media (max-width: 640px) {
+            nav {
+                flex-wrap: wrap;
+            }
+            header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="index.html">
+            <svg aria-hidden="true" viewBox="0 0 24 24">
+                <path d="M4 10.75 12 4l8 6.75"/>
+                <path d="M5.5 11.75V20h4.5v-4.75h4V20h4.5v-8.25"/>
+            </svg>
+            <span>Home</span>
+        </a>
+        <a href="labs.html">
+            <svg aria-hidden="true" viewBox="0 0 24 24">
+                <path d="M4.5 6.5h5l1.5 2H19a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1h-14a1 1 0 0 1-1-1v-9a1 1 0 0 1 1-1Z"/>
+            </svg>
+            <span>Labs</span>
+        </a>
+    </nav>
+
+    <main>
+        <header>
+            <h1>Lab 5: Linear PID Control and Linear Interpolation</h1>
+            <p>Goal: Implement PID control of the robot and speed up data collection.</p>
+        </header>
+
+        <!-- ── Prelab ─────────────────────────────────────────────────────── -->
+        <section id="prelab">
+            <h2>Prelab</h2>
+            <p>For the control labs, I wanted to set up an efficient pipeline for testing/tuning PID variables. I needed functions to start and stop PID, as well as send over collected PID data (error, motor output). I added the following global variables:</p>
+
+            <div class="gist">
+                <div class="gist-header">
+                    <span class="file-name">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5h16M4 12h16M4 18.5h16"/></svg>
+                        Global Variables
+                    </span>
+                    <span class="lang-tag">C++</span>
+                </div>
+                <div class="gist-body">
+                    <pre><code class="code-block"><span class="code-comment">// PID Control</span>
+<span class="code-kw">const</span> <span class="code-kw">int</span> PID_DATA_LEN = <span class="code-num">2000</span>;
+
+<span class="code-kw">int</span> pid_run_flag = <span class="code-num">0</span>;
+<span class="code-kw">int</span> pid_data_count = <span class="code-num">0</span>;
+
+<span class="code-kw">float</span> K_p = <span class="code-num">0.0</span>;
+<span class="code-kw">float</span> K_i = <span class="code-num">0.0</span>;
+<span class="code-kw">float</span> K_d = <span class="code-num">0.0</span>;
+
+<span class="code-kw">float</span> pid_target_distance = <span class="code-num">0.0</span>;
+
+<span class="code-kw">float</span> pid_time_arr[PID_DATA_LEN];
+<span class="code-kw">float</span> pid_tof_arr[PID_DATA_LEN];
+<span class="code-kw">float</span> pid_speed_arr[PID_DATA_LEN];
+<span class="code-kw">float</span> pid_error_arr[PID_DATA_LEN];
+<span class="code-kw">float</span> pid_Kp_arr[PID_DATA_LEN];
+<span class="code-kw">float</span> pid_Ki_arr[PID_DATA_LEN];
+<span class="code-kw">float</span> pid_Kd_arr[PID_DATA_LEN];
+
+<span class="code-kw">float</span> pid_start_time;
+<span class="code-kw">float</span> pid_position_error = <span class="code-num">0</span>;
+<span class="code-kw">float</span> pid_prev_error = <span class="code-num">0</span>;
+<span class="code-kw">float</span> pid_integral_term = <span class="code-num">0</span>;
+<span class="code-kw">float</span> pid_derivative_term = <span class="code-num">0</span>;
+<span class="code-kw">float</span> pid_output;</code></pre>
+                </div>
+            </div>
+
+            <p>Later on in the lab, I'll mention additional global variables used for interpolating TOF data. Next, I added three commands for starting and stopping the PID process, and sending collected data over Bluetooth.</p>
+
+            <hr class="task-divider">
+
+            <h3>START_PID_CONTROL</h3>
+            <p>Receives process variable values for Kp, Ki, and Kd, as well as target distance for the car to stop from the wall. Resets data arrays and necessary PID variables.</p>
+            <div class="gist">
+                <div class="gist-header">
+                    <span class="file-name">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5h16M4 12h16M4 18.5h16"/></svg>
+                        START_PID_CONTROL
+                    </span>
+                    <span class="lang-tag">C++</span>
+                </div>
+                <div class="gist-body">
+                    <pre><code class="code-block"><span class="code-kw">case</span> START_PID_CONTROL:
+    success = <span class="code-fn">robot_cmd.get_next_value</span>(K_p); <span class="code-kw">if</span> (!success) <span class="code-kw">return</span>;
+    success = <span class="code-fn">robot_cmd.get_next_value</span>(K_i); <span class="code-kw">if</span> (!success) <span class="code-kw">return</span>;
+    success = <span class="code-fn">robot_cmd.get_next_value</span>(K_d); <span class="code-kw">if</span> (!success) <span class="code-kw">return</span>;
+    success = <span class="code-fn">robot_cmd.get_next_value</span>(pid_target_distance); <span class="code-kw">if</span> (!success) <span class="code-kw">return</span>;
+
+    <span class="code-comment">// reset all state</span>
+    pid_data_count = <span class="code-num">0</span>;
+    pid_prev_error = <span class="code-num">0</span>;
+    pid_integral_term = <span class="code-num">0</span>;
+    pid_position_error = <span class="code-num">0</span>;
+    pid_derivative_term = <span class="code-num">0</span>;
+    pid_start_time = <span class="code-fn">millis</span>();
+    pid_last_time = <span class="code-fn">millis</span>();
+
+    <span class="code-fn">tofSensor1.startRanging</span>();
+    pid_run_flag = <span class="code-num">1</span>;
+    <span class="code-fn">Serial.print</span>(<span class="code-str">"PID started. Target: "</span>); <span class="code-fn">Serial.println</span>(pid_target_distance);
+    <span class="code-kw">break</span>;</code></pre>
+                </div>
+            </div>
+
+            <hr class="task-divider">
+
+            <h3>STOP_PID_CONTROL</h3>
+            <p>Stops the PID control loop by setting the PID flag to 0. Hard stop for the car.</p>
+            <div class="gist">
+                <div class="gist-header">
+                    <span class="file-name">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5h16M4 12h16M4 18.5h16"/></svg>
+                        STOP_PID_CONTROL
+                    </span>
+                    <span class="lang-tag">C++</span>
+                </div>
+                <div class="gist-body">
+                    <pre><code class="code-block"><span class="code-kw">case</span> STOP_PID_CONTROL:
+    pid_run_flag = <span class="code-num">0</span>;
+    <span class="code-fn">stop</span>();
+    <span class="code-fn">Serial.println</span>(<span class="code-str">"PID stopped"</span>);
+    <span class="code-kw">break</span>;</code></pre>
+                </div>
+            </div>
+
+            <hr class="task-divider">
+
+            <h3>SEND_PID_DATA</h3>
+            <p>Sends time, TOF, motor output/speed, and PID process variable values over Bluetooth.</p>
+            <div class="gist">
+                <div class="gist-header">
+                    <span class="file-name">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5h16M4 12h16M4 18.5h16"/></svg>
+                        sendPIDDataOverBluetooth()
+                    </span>
+                    <span class="lang-tag">C++</span>
+                </div>
+                <div class="gist-body">
+                    <pre><code class="code-block"><span class="code-kw">void</span> <span class="code-fn">sendPIDDataOverBluetooth</span>() {
+    <span class="code-fn">Serial.print</span>(<span class="code-str">"Sending "</span>); <span class="code-fn">Serial.print</span>(pid_data_count); <span class="code-fn">Serial.println</span>(<span class="code-str">" PID samples"</span>);
+    <span class="code-kw">int</span> i = <span class="code-num">0</span>;
+    <span class="code-kw">while</span> (i &lt; pid_data_count) {
+        <span class="code-fn">tx_estring_value.clear</span>();
+        <span class="code-fn">tx_estring_value.append</span>(pid_time_arr[i]);  <span class="code-fn">tx_estring_value.append</span>(<span class="code-str">","</span>);
+        <span class="code-fn">tx_estring_value.append</span>(pid_tof_arr[i]);   <span class="code-fn">tx_estring_value.append</span>(<span class="code-str">","</span>);
+        <span class="code-fn">tx_estring_value.append</span>(pid_speed_arr[i]); <span class="code-fn">tx_estring_value.append</span>(<span class="code-str">","</span>);
+        <span class="code-fn">tx_estring_value.append</span>(pid_error_arr[i]); <span class="code-fn">tx_estring_value.append</span>(<span class="code-str">","</span>);
+        <span class="code-fn">tx_estring_value.append</span>(pid_Kp_arr[i]);   <span class="code-fn">tx_estring_value.append</span>(<span class="code-str">","</span>);
+        <span class="code-fn">tx_estring_value.append</span>(pid_Ki_arr[i]);   <span class="code-fn">tx_estring_value.append</span>(<span class="code-str">","</span>);
+        <span class="code-fn">tx_estring_value.append</span>(pid_Kd_arr[i]);
+        <span class="code-fn">tx_characteristic_string.writeValue</span>(<span class="code-fn">tx_estring_value.c_str</span>());
+        <span class="code-fn">delay</span>(<span class="code-num">10</span>);
+        i++;
+    }
+}</code></pre>
+                </div>
+            </div>
+
+            <hr class="task-divider">
+
+            <p>For my implementation of PID, I wrote a function called <code class="code-inline">runPIDIteration()</code> which runs one PID loop. The PID runs based on the main loop &mdash; if the <code class="code-inline">pid_run_flag</code> is set, PID will stay running.</p>
+
+            <h3>runPIDIteration()</h3>
+            <div class="gist">
+                <div class="gist-header">
+                    <span class="file-name">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5h16M4 12h16M4 18.5h16"/></svg>
+                        runPIDIteration()
+                    </span>
+                    <span class="lang-tag">C++</span>
+                </div>
+                <div class="gist-body">
+                    <pre><code class="code-block"><span class="code-kw">void</span> <span class="code-fn">runPIDIteration</span>() {
+    <span class="code-comment">// stop if data overflows</span>
+    <span class="code-kw">if</span> (pid_data_count >= PID_DATA_LEN) {
+        pid_run_flag = <span class="code-num">0</span>;
+        <span class="code-fn">stop</span>();
+        <span class="code-kw">return</span>;
+    }
+
+    <span class="code-comment">// fetch TOF reading</span>
+    <span class="code-fn">tofSensor1.startRanging</span>();
+    <span class="code-kw">while</span> (!<span class="code-fn">tofSensor1.checkForDataReady</span>()) {}
+    <span class="code-kw">float</span> distance = <span class="code-fn">tofSensor1.getDistance</span>();
+    <span class="code-fn">tofSensor1.clearInterrupt</span>();
+    <span class="code-fn">tofSensor1.stopRanging</span>();
+
+    <span class="code-comment">// store time and TOF reading into array</span>
+    <span class="code-kw">float</span> elapsed = <span class="code-fn">millis</span>() - pid_start_time;
+    pid_time_arr[pid_data_count] = elapsed;
+    pid_tof_arr[pid_data_count] = distance;
+
+    <span class="code-comment">// run PID algorithm for speed</span>
+    <span class="code-fn">calculateSpeedWithPID</span>(pid_data_count, K_p, K_i, K_d, elapsed, distance);
+    pid_data_count++;
+}</code></pre>
+                </div>
+            </div>
+
+            <p>The last function is <code class="code-inline">calculateSpeedWithPID</code>, which implements the PID algorithm.</p>
+
+            <h3>calculateSpeedWithPID()</h3>
+            <div class="gist">
+                <div class="gist-header">
+                    <span class="file-name">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5h16M4 12h16M4 18.5h16"/></svg>
+                        calculateSpeedWithPID()
+                    </span>
+                    <span class="lang-tag">C++</span>
+                </div>
+                <div class="gist-body">
+                    <pre><code class="code-block"><span class="code-kw">void</span> <span class="code-fn">calculateSpeedWithPID</span>(<span class="code-kw">int</span> arr_index, <span class="code-kw">float</span> K_p, <span class="code-kw">float</span> K_i, <span class="code-kw">float</span> K_d,
+                             <span class="code-kw">float</span> elapsed_time, <span class="code-kw">float</span> tof_reading) {
+    <span class="code-kw">float</span> pid_current_time = <span class="code-fn">millis</span>();
+    <span class="code-kw">float</span> dt = (pid_current_time - pid_last_time) / <span class="code-num">1000.0</span>;
+    <span class="code-kw">if</span> (dt &lt;= <span class="code-num">0</span>) dt = <span class="code-num">0.001</span>;
+
+    <span class="code-comment">// Proportional term</span>
+    pid_position_error = tof_reading - pid_target_distance;
+
+    <span class="code-comment">// Integral term</span>
+    pid_integral_term += pid_position_error * dt;
+    pid_integral_term = <span class="code-fn">constrain</span>(pid_integral_term, <span class="code-num">-500.0</span>, <span class="code-num">500.0</span>);
+
+    <span class="code-comment">// Derivative term</span>
+    pid_derivative_term = (pid_position_error - pid_prev_error) / dt;
+
+    <span class="code-kw">float</span> P_term = K_p * pid_position_error;
+    <span class="code-kw">float</span> I_term = K_i * pid_integral_term;
+    <span class="code-kw">float</span> D_term = K_d * pid_derivative_term;
+    <span class="code-kw">int</span> pid_speed = (<span class="code-kw">int</span>)(P_term + I_term + D_term);
+
+    <span class="code-comment">// Stop if speed is negligible</span>
+    <span class="code-kw">if</span> (<span class="code-fn">abs</span>(pid_speed) &lt; <span class="code-num">1</span>) {
+        <span class="code-fn">stop</span>();
+    } <span class="code-kw">else</span> {
+        <span class="code-comment">// Clamp max</span>
+        <span class="code-kw">if</span> (pid_speed &gt;  maxSpeed) pid_speed =  maxSpeed;
+        <span class="code-kw">if</span> (pid_speed &lt; -maxSpeed) pid_speed = -maxSpeed;
+        <span class="code-comment">// Enforce minimum speed / deadband</span>
+        <span class="code-kw">if</span> (pid_speed &gt; <span class="code-num">0</span> &amp;&amp; pid_speed &lt;  minSpeed) pid_speed =  minSpeed;
+        <span class="code-kw">if</span> (pid_speed &lt; <span class="code-num">0</span> &amp;&amp; pid_speed &gt; -minSpeed) pid_speed = -minSpeed;
+
+        <span class="code-kw">if</span> (pid_speed &gt; <span class="code-num">0</span>) {
+            <span class="code-fn">forward</span>(pid_speed);
+        } <span class="code-kw">else</span> {
+            <span class="code-fn">backward</span>(-<span class="code-num">1</span> * pid_speed);
+        }
+    }
+
+    pid_prev_error = pid_position_error;
+    pid_last_time = pid_current_time;
+    pid_output = pid_speed;
+
+    pid_speed_arr[arr_index] = pid_speed;
+    pid_error_arr[arr_index] = pid_position_error;
+    pid_Kp_arr[arr_index]    = P_term;
+    pid_Ki_arr[arr_index]    = I_term;
+    pid_Kd_arr[arr_index]    = D_term;
+}</code></pre>
+                </div>
+            </div>
+
+            <p>Now I have the foundation for running PID control for a fixed amount of time and receiving PID data over Bluetooth. I can also easily tune my PID process variables since I'm sending their values over Bluetooth. Here is an example from the Python side where I run PID over 5 seconds.</p>
+
+            <div class="gist">
+                <div class="gist-header">
+                    <span class="file-name">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5h16M4 12h16M4 18.5h16"/></svg>
+                        pid_test.py
+                    </span>
+                    <span class="lang-tag">Python</span>
+                </div>
+                <div class="gist-body">
+                    <pre><code class="code-block">filename = <span class="code-str">'pid_data.csv'</span>
+
+<span class="code-kw">def</span> <span class="code-fn">pid_handler</span>(sender_uuid, data):
+    datapoint = <span class="code-fn">data.decode</span>(<span class="code-str">"utf-8"</span>).<span class="code-fn">strip</span>()
+    parts = datapoint.<span class="code-fn">split</span>(<span class="code-str">","</span>)
+    t, tof, speed, error, kp, ki, kd = parts[<span class="code-num">0</span>], parts[<span class="code-num">1</span>], parts[<span class="code-num">2</span>], parts[<span class="code-num">3</span>], parts[<span class="code-num">4</span>], parts[<span class="code-num">5</span>], parts[<span class="code-num">6</span>]
+    <span class="code-kw">with</span> <span class="code-fn">open</span>(filename, <span class="code-str">"a+"</span>) <span class="code-kw">as</span> f:
+        f.<span class="code-fn">seek</span>(<span class="code-num">0</span>)
+        <span class="code-kw">if</span> f.<span class="code-fn">read</span>(<span class="code-num">1</span>) == <span class="code-str">""</span>:
+            f.<span class="code-fn">write</span>(<span class="code-str">"Time,TOF,Speed,Error,Kp,Ki,Kd\n"</span>)
+        f.<span class="code-fn">write</span>(<span class="code-str">f"{t},{tof},{speed},{error},{kp},{ki},{kd}\n"</span>)
+
+kp = <span class="code-num">0.05</span>
+ki = <span class="code-num">0.0</span>
+kd = <span class="code-num">0.0</span>
+target_distance_inches = <span class="code-num">12</span>
+
+ble.<span class="code-fn">send_command</span>(CMD.START_PID_CONTROL, <span class="code-str">f"{kp}|{ki}|{kd}|{target_distance_inches * 25.4}"</span>)
+<span class="code-fn">time.sleep</span>(<span class="code-num">5</span>)
+ble.<span class="code-fn">send_command</span>(CMD.STOP_PID_CONTROL, <span class="code-str">""</span>)
+<span class="code-fn">time.sleep</span>(<span class="code-num">0.5</span>)
+
+<span class="code-comment"># fetch PID data</span>
+ble.<span class="code-fn">start_notify</span>(ble.uuid[<span class="code-str">'RX_STRING'</span>], pid_handler)
+ble.<span class="code-fn">send_command</span>(CMD.SEND_PID_DATA, <span class="code-str">""</span>)</code></pre>
+                </div>
+            </div>
+        </section>
+
+        <hr class="section-divider">
+
+        <!-- ── Position Control ───────────────────────────────────────────── -->
+        <section id="position-control">
+            <h2>Position Control</h2>
+            <p>The goal is to use PID to drive the robot as fast as possible and stop exactly 1&nbsp;ft away from a wall. The robot should be able to do this in changing conditions, such as different starting positions and floor surfaces, and should also respond to external perturbations.</p>
+
+            <p>For initial testing, I limited the max speed of the car to prevent collisions that could break parts.</p>
+
+            <div class="gist">
+                <div class="gist-header">
+                    <span class="file-name">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5h16M4 12h16M4 18.5h16"/></svg>
+                        Speed Limits
+                    </span>
+                    <span class="lang-tag">C++</span>
+                </div>
+                <div class="gist-body">
+                    <pre><code class="code-block"><span class="code-kw">const int</span> minSpeed = <span class="code-num">40</span>;
+<span class="code-kw">const int</span> maxSpeed = <span class="code-num">150</span>;</code></pre>
+                </div>
+            </div>
+
+            <p>The TOF sensor is set to long mode (range 2&ndash;4&thinsp;m). Starting ~2&thinsp;m from the target gives an initial error of ~1500&thinsp;mm, which suggests a minimum Kp of:</p>
+
+            <div class="callout">
+                <p><strong>Min Kp estimate:</strong> 80 / 1500 &asymp; 0.05</p>
+            </div>
+
+            <p>Below are three tests showing how changing Kp affects performance.</p>
+
+            <hr class="task-divider">
+
+            <h3>Kp = 0.05</h3>
+            <div class="video-embed">
+                <iframe src="https://www.youtube.com/embed/DdWjqkK2sgw?si=4NZNg08bKZfbA_j3" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+            </div>
+            <img class="media-img" src="media/lab5/k_p_first.png" alt="PID data plot – Kp 0.05">
+
+            <hr class="task-divider">
+
+            <h3>Kp = 0.02</h3>
+            <div class="video-embed-portrait">
+                <iframe src="https://www.youtube.com/embed/MQdNdIAA5SA" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+            </div>
+            <img class="media-img" src="media/lab5/k_p_second.png" alt="PID data plot – Kp 0.02">
+
+            <hr class="task-divider">
+
+            <h3>Kp = 0.07</h3>
+            <div class="video-embed-portrait">
+                <iframe src="https://www.youtube.com/embed/OJk7rC3Je_U" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+            </div>
+            <img class="media-img" src="media/lab5/k_p_third.png" alt="PID data plot – Kp 0.07">
+
+            <hr class="task-divider">
+
+            <p>At Kp&nbsp;=&nbsp;0.05&ndash;0.07 the car overshoots and hits the wall. At Kp&nbsp;=&nbsp;0.02, the car moves too slowly and barely reaches the target in 5 seconds. To prevent overshooting, I added derivative control. The derivative term looks at how fast the error is changing and applies a damping force to slow the car down before it reaches the wall.</p>
+
+            <ul>
+                <li><strong>Kd too low</strong> &rarr; overshoots</li>
+                <li><strong>Kd tuned well</strong> &rarr; smooth stop</li>
+                <li><strong>Kd too high</strong> &rarr; over-sensitive to TOF noise, choppy, stops too soon</li>
+            </ul>
+
+            <p>Using Kp&nbsp;=&nbsp;0.07, I tested various Kd values.</p>
+
+            <hr class="task-divider">
+
+            <h3>Kd = 0.02</h3>
+            <p>The dampening was pretty good and prevented the car from hitting the wall, but I thought the Kd could be higher.</p>
+            <div class="video-embed">
+                <iframe src="https://www.youtube.com/embed/8v0hy8dSc1g?si=ppNr7g3g3YNB7xZ8" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+            </div>
+            <img class="media-img" src="media/lab5/k_d_first.png" alt="PID data plot – Kd 0.02">
+
+            <hr class="task-divider">
+
+            <h3>Kd = 0.1</h3>
+            <p>The dampening was too much and stalled the car well before its target destination.</p>
+            <div class="video-embed">
+                <iframe src="https://www.youtube.com/embed/-IMGxaHfalw?si=PHKKMUve-NXr49X0" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+            </div>
+            <img class="media-img" src="media/lab5/k_d_second.png" alt="PID data plot – Kd 0.1">
+
+            <hr class="task-divider">
+
+            <h3>Optimal Tuning &mdash; Kp = 0.18, Kd = 0.07</h3>
+            <p>After careful tuning I raised Kp to increase speed while keeping Kd high enough to prevent overshoot. This achieved a fast drive with a precise stop at the target distance.</p>
+            <div class="video-embed-portrait">
+                <iframe src="https://www.youtube.com/embed/ZaKgtGQ29TA" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+            </div>
+            <img class="media-img" src="media/lab5/optimal_tuning.png" alt="PID data plot – optimal tuning">
+        </section>
+
+        <hr class="section-divider">
+
+        <!-- ── Extrapolation ──────────────────────────────────────────────── -->
+        <section id="extrapolation">
+            <h2>Extrapolation</h2>
+            <p>For this part of the lab, I wanted to speed up the PID loop, which is limited by the TOF sensor. Because I was waiting for new TOF values each iteration, the PID loop ran at the same frequency as the sensor. I added a debug print to measure the interval between readings:</p>
+
+            <div class="gist">
+                <div class="gist-header">
+                    <span class="file-name">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5h16M4 12h16M4 18.5h16"/></svg>
+                        TOF Timing Debug
+                    </span>
+                    <span class="lang-tag">C++</span>
+                </div>
+                <div class="gist-body">
+                    <pre><code class="code-block"><span class="code-comment">// print time between readings</span>
+<span class="code-fn">Serial.print</span>(<span class="code-str">"dt: "</span>); <span class="code-fn">Serial.print</span>(elapsed - pid_time_arr[<span class="code-fn">max</span>(<span class="code-num">0</span>, pid_data_count - <span class="code-num">1</span>)]);
+<span class="code-fn">Serial.print</span>(<span class="code-str">"ms | TOF: "</span>); <span class="code-fn">Serial.println</span>(last_tof_distance);</code></pre>
+                </div>
+            </div>
+
+            <img class="media-img" src="media/lab5/time_between_tof_readings.png" alt="Serial output showing time between TOF readings">
+
+            <p>The TOF returns new data about every ~95&thinsp;ms, or ~10.5&thinsp;Hz. Rather than waiting for new data each iteration, I calculate PID even when no new data is available, using the most recent datapoint stored in a global variable <code class="code-inline">last_tof_distance</code>. With that change, a 5-second run yielded 686 datapoints &mdash; a frequency of 137&thinsp;Hz, nearly a 10&times; increase.</p>
+
+            <p>Finally, instead of simply replaying the last datapoint, I implemented linear extrapolation. Each time a new TOF reading arrives, the slope between the two most recent readings is computed and used to project the distance forward in time. I added three global variables:</p>
+
+            <div class="gist">
+                <div class="gist-header">
+                    <span class="file-name">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5h16M4 12h16M4 18.5h16"/></svg>
+                        Extrapolation Globals
+                    </span>
+                    <span class="lang-tag">C++</span>
+                </div>
+                <div class="gist-body">
+                    <pre><code class="code-block"><span class="code-kw">float</span> last_tof_time = <span class="code-num">0.0</span>;
+<span class="code-kw">float</span> prev_tof_distance = <span class="code-num">0.0</span>;
+<span class="code-kw">float</span> prev_tof_time = <span class="code-num">0.0</span>;</code></pre>
+                </div>
+            </div>
+
+            <p>And here is the extrapolation logic:</p>
+
+            <div class="gist">
+                <div class="gist-header">
+                    <span class="file-name">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5h16M4 12h16M4 18.5h16"/></svg>
+                        Linear Extrapolation
+                    </span>
+                    <span class="lang-tag">C++</span>
+                </div>
+                <div class="gist-body">
+                    <pre><code class="code-block"><span class="code-kw">float</span> extrapolated_distance = last_tof_distance;
+
+<span class="code-kw">if</span> (prev_tof_time &gt; <span class="code-num">0</span> &amp;&amp; last_tof_time != prev_tof_time) {
+    <span class="code-kw">float</span> slope = (last_tof_distance - prev_tof_distance) / (last_tof_time - prev_tof_time);
+    <span class="code-kw">float</span> dt_since_last = current_time - last_tof_time;
+    extrapolated_distance = last_tof_distance + slope * dt_since_last;
+}</code></pre>
+                </div>
+            </div>
+
+            <p>With all these changes, I did another tuning session. After some time I achieved the following result:</p>
+
+            <div class="video-embed-portrait">
+                <iframe src="https://www.youtube.com/embed/EYYK6e2cw-U" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+            </div>
+            <img class="media-img" src="media/lab5/tuned_extrapolation_run.png" alt="PID data plot – extrapolation run">
+
+            <p>I didn't see a dramatic difference in driving performance between the blocking-TOF and extrapolated implementations, but the jump from ~10&thinsp;Hz to ~137&thinsp;Hz in PID loop frequency is significant and will matter for future labs.</p>
+        </section>
+
+        <hr class="section-divider">
+
+        <!-- ── Collaboration ──────────────────────────────────────────────── -->
+        <section id="collaboration">
+            <h2>Collaboration</h2>
+            <p>For this lab, I referenced <a class="student-link" href="#" target="_blank" rel="noopener">Aidan Derocher</a>'s and <a class="student-link" href="#" target="_blank" rel="noopener">Lucca Correia</a>'s websites. I used their sites to understand how to store PID data in arrays and how to structure the PID loop. I drew inspiration from Lucca for my <code class="code-inline">START_PID_CONTROL</code> and <code class="code-inline">STOP_PID_CONTROL</code> commands, as well as for speed clamping and deadband logic in my PID calculation. I also consulted Claude for tips on my PID implementation, such as which global variables I would need for the interpolation aspect. During debugging, I ran into naming issues and variable type issues that were silently truncating sensor measurements and corrupting PID runs &mdash; Claude helped me identify these errors. Finally, I provided all my text, images, and videos to Claude to style this website.</p>
+        </section>
+    </main>
+</body>
+</html>
