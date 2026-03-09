@@ -27,6 +27,9 @@
             font-size: 1.05rem;
             line-height: 1.8;
             min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
         nav {
@@ -73,8 +76,8 @@
         }
 
         main {
+            width: 100%;
             max-width: 1000px;
-            margin: 0 auto;
             padding: 0 24px 96px;
             display: grid;
             gap: 36px;
@@ -674,13 +677,13 @@ ble.<span class="code-fn">send_command</span>(CMD.SEND_PID_DATA, <span class="co
                 <p><strong>Min Kp estimate:</strong> 80 / 1500 &asymp; 0.05</p>
             </div>
 
-            <p>Below are three tests showing how changing Kp affects performance.</p>
+            <p>Below are two tests to get a sense of how changing Kp affects the robot's performance.</p>
 
             <hr class="task-divider">
 
             <h3>Kp = 0.05</h3>
-            <div class="video-embed">
-                <iframe src="https://www.youtube.com/embed/DdWjqkK2sgw?si=4NZNg08bKZfbA_j3" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+            <div class="video-embed-portrait">
+                <iframe src="https://www.youtube.com/embed/DdWjqkK2sgw" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
             </div>
             <img class="media-img" src="media/lab5/k_p_first.png" alt="PID data plot – Kp 0.05">
 
@@ -694,15 +697,7 @@ ble.<span class="code-fn">send_command</span>(CMD.SEND_PID_DATA, <span class="co
 
             <hr class="task-divider">
 
-            <h3>Kp = 0.07</h3>
-            <div class="video-embed-portrait">
-                <iframe src="https://www.youtube.com/embed/OJk7rC3Je_U" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
-            </div>
-            <img class="media-img" src="media/lab5/k_p_third.png" alt="PID data plot – Kp 0.07">
-
-            <hr class="task-divider">
-
-            <p>At Kp&nbsp;=&nbsp;0.05&ndash;0.07 the car overshoots and hits the wall. At Kp&nbsp;=&nbsp;0.02, the car moves too slowly and barely reaches the target in 5 seconds. To prevent overshooting, I added derivative control. The derivative term looks at how fast the error is changing and applies a damping force to slow the car down before it reaches the wall.</p>
+            <p>As we can see in the videos, when Kp is 0.05, the car will overshoot and hit the wall. At 0.02, the car moves too slowly and barely reaches the target in the 5 second PID session. To prevent overshooting and have the car stop smoother closer to the wall, I added in derivative control. The derivative term looks at how fast the error is changing and applies a corrective force, or in this case, a damping force which will slow the car down faster. This will prevent overshooting.</p>
 
             <ul>
                 <li><strong>Kd too low</strong> &rarr; overshoots</li>
@@ -715,9 +710,9 @@ ble.<span class="code-fn">send_command</span>(CMD.SEND_PID_DATA, <span class="co
             <hr class="task-divider">
 
             <h3>Kd = 0.02</h3>
-            <p>The dampening was pretty good and prevented the car from hitting the wall, but I thought the Kd could be higher.</p>
-            <div class="video-embed">
-                <iframe src="https://www.youtube.com/embed/8v0hy8dSc1g?si=ppNr7g3g3YNB7xZ8" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+            <p>The dampening was pretty good and prevented the car from hitting the wall. I still think the Kd can be higher.</p>
+            <div class="video-embed-portrait">
+                <iframe src="https://www.youtube.com/embed/8v0hy8dSc1g" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
             </div>
             <img class="media-img" src="media/lab5/k_d_first.png" alt="PID data plot – Kd 0.02">
 
