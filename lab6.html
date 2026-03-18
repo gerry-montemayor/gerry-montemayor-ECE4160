@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Lab 6: Orientation Control</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        :root {
+            --bg-color: #10151b;
+            --text-color: #e6d8c0;
+            --card-bg: #161c24;
+            --card-border: #1f262f;
+            --card-outline: #26303a;
+            --muted: rgba(230, 216, 192, 0.8);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 1.05rem;
+            line-height: 1.8;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        nav {
+            width: fit-content;
+            max-width: 720px;
+            margin: 28px auto 48px;
+            padding: 12px 18px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            outline: 1px solid var(--card-outline);
+            border-radius: 14px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+        }
+
+        nav a {
+            color: var(--text-color);
+            text-decoration: none;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 12px;
+            border-radius: 10px;
+            transition: background-color 0.2s ease, transform 0.2s ease;
+        }
+
+        nav a:hover {
+            background-color: rgba(230, 216, 192, 0.12);
+            transform: translateY(-1px);
+        }
+
+        nav svg {
+            width: 28px;
+            height: 28px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 1.6;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        main {
+            width: 100%;
+            max-width: 1000px;
+            padding: 0 24px 96px;
+            display: grid;
+            gap: 36px;
+        }
+
+        header h1 {
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            color: #9ae6c4;
+        }
+
+        header p {
+            color: var(--muted);
+        }
+
+        section {
+            background: transparent;
+            border: none;
+            outline: none;
+            border-radius: 0;
+            padding: 0;
+            box-shadow: none;
+        }
+
+        h2 {
+            font-size: 1.75rem;
+            margin: 0 0 14px;
+            color: #9ae6c4;
+        }
+
+        h3 {
+            font-size: 1.3rem;
+            margin: 0 0 12px;
+            color: #9ae6c4;
+        }
+
+        p {
+            margin: 0 0 14px;
+        }
+
+        ul {
+            margin: 12px 0 14px 20px;
+            color: var(--muted);
+        }
+
+        ul li {
+            margin-bottom: 6px;
+        }
+
+        .subdued {
+            color: var(--muted);
+        }
+
+        a.student-link {
+            color: #8de4b2;
+            text-decoration: none;
+            border-bottom: 1px solid rgba(141, 228, 178, 0.4);
+            transition: color 0.2s ease, border-color 0.2s ease;
+        }
+
+        a.student-link:hover {
+            color: #a6f0c7;
+            border-color: rgba(166, 240, 199, 0.7);
+        }
+
+        a.student-link:visited {
+            color: #8de4b2;
+            border-color: rgba(141, 228, 178, 0.4);
+        }
+
+        .gist {
+            margin: 16px 0;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid #1f2630;
+            background: linear-gradient(180deg, #131c28 0%, #101722 100%);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 10px 22px rgba(0, 0, 0, 0.35);
+        }
+
+        .gist-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 12px;
+            background: #0f1620;
+            border-bottom: 1px solid #1f2630;
+            color: rgba(230, 216, 192, 0.9);
+            font-size: 1rem;
+        }
+
+        .gist-header .file-name {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .gist-header svg {
+            width: 18px;
+            height: 18px;
+            stroke: currentColor;
+            fill: none;
+        }
+
+        .lang-tag {
+            background: #1f2a36;
+            color: #cdd7e1;
+            border: 1px solid #2d3744;
+            padding: 2px 8px;
+            border-radius: 999px;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .gist-body {
+            padding: 14px;
+            background: #0f1722;
+        }
+
+        pre {
+            margin: 0;
+            padding: 0;
+            overflow-x: auto;
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+            font-size: 0.98rem;
+            line-height: 1.6;
+            color: #e9edf5;
+        }
+
+        code {
+            background: transparent;
+        }
+
+        .code-block {
+            display: block;
+            white-space: pre;
+        }
+
+        .code-inline {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 6px;
+            background: #0f1722;
+            border: 1px solid #1f2630;
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+            font-size: 0.95rem;
+            color: #e03a4f;
+            line-height: 1.3;
+        }
+
+        .code-kw     { color: #8ad1ff; }
+        .code-fn     { color: #a3d9a5; }
+        .code-str    { color: #ffd48a; }
+        .code-num    { color: #f3a5ff; }
+        .code-comment{ color: #8da0b3; }
+        .code-op     { color: #c4b5ff; }
+        .code-type   { color: #8ad1ff; }
+
+        .media-img {
+            display: block;
+            max-width: 760px;
+            max-height: 520px;
+            width: auto;
+            height: auto;
+            margin: 10px auto 16px;
+            border-radius: 10px;
+            border: 1px solid #2d3642;
+            background: #0f1722;
+            padding: 6px;
+        }
+
+        .video-embed {
+            position: relative;
+            width: 100%;
+            max-width: 860px;
+            aspect-ratio: 16 / 9;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #2d3642;
+            background: #0f1722;
+            margin: 12px auto 20px;
+        }
+
+        .video-embed iframe,
+        .video-embed video {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+            object-fit: contain;
+        }
+
+        .video-embed-portrait {
+            position: relative;
+            width: 100%;
+            max-width: 340px;
+            aspect-ratio: 9 / 16;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #2d3642;
+            background: #0f1722;
+            margin: 12px auto 20px;
+        }
+
+        .video-embed-portrait iframe,
+        .video-embed-portrait video {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+            object-fit: contain;
+        }
+
+        .section-divider {
+            border: 0;
+            height: 1px;
+            background: #2e3641;
+            margin: 8px 0 28px;
+        }
+
+        .task-divider {
+            border: 0;
+            height: 1px;
+            background: none;
+            border-top: 1px dashed #3b4552;
+            margin: 28px 0;
+        }
+
+        .callout {
+            border-left: 4px solid #9ae6c4;
+            padding: 10px 14px;
+            background: #0f1623;
+            border-radius: 10px;
+            color: var(--muted);
+            margin: 10px 0 16px;
+        }
+
+        .callout p:last-child {
+            margin-bottom: 0;
+        }
+
+        .kv-list {
+            list-style: none;
+            margin: 0 0 14px;
+            padding: 0;
+        }
+
+        .kv-list li {
+            padding: 4px 0;
+            color: var(--muted);
+        }
+
+        .kv-list li strong {
+            color: var(--text-color);
+        }
+
+        @media (max-width: 640px) {
+            nav {
+                flex-wrap: wrap;
+            }
+            header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="index.html">
+            <svg aria-hidden="true" viewBox="0 0 24 24">
+                <path d="M4 10.75 12 4l8 6.75"/>
+                <path d="M5.5 11.75V20h4.5v-4.75h4V20h4.5v-8.25"/>
+            </svg>
+            <span>Home</span>
+        </a>
+        <a href="labs.html">
+            <svg aria-hidden="true" viewBox="0 0 24 24">
+                <path d="M4.5 6.5h5l1.5 2H19a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1h-14a1 1 0 0 1-1-1v-9a1 1 0 0 1 1-1Z"/>
+            </svg>
+            <span>Labs</span>
+        </a>
+    </nav>
+
+    <main>
+        <header>
+            <h1>Lab 6: Orientation Control</h1>
+            <p>Goal: Get experience with orientation PID using the IMU. Use the IMU to control the yaw of the robot.</p>
+        </header>
+
+        <!-- ── Prelab ─────────────────────────────────────────────────────── -->
+        <section id="prelab">
+            <h2>Prelab</h2>
+            <p>Before writing commands for the orientation PID, I started by setting up Digital Motion Processing (DMP) for orientation. The DMP allows for drift and error correction by combining readings from the gyroscope, accelerometer, and magnetometer.</p>
+
+            <p>For this lab specifically, I referenced <code class="code-inline">Example7_DMP_Quat6_EulerAngles</code>, which takes quaternion data from the DMP and converts to reliable roll, pitch, and yaw angles. I followed the directions on <a class="student-link" href="https://fastrobotscornell.github.io/FastRobots-2026/tutorials/dmp.html" target="_blank" rel="noopener">this page</a> to set up the DMP.</p>
+
+            <p>After getting the example above to work, I transferred necessary code to my <code class="code-inline">getYawFromDMP()</code> function. I made the following changes to the <code class="code-inline">setup()</code> code, and the yaw calculation code is below. I also quickly verified I was getting correct yaw angles with a Serial Plotter visualization.</p>
+
+            <hr class="task-divider">
+
+            <h3>Updated setup() for DMP</h3>
+            <div class="gist">
+                <div class="gist-header">
+                    <span class="file-name">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5h16M4 12h16M4 18.5h16"/></svg>
+                        setup()
+                    </span>
+                    <span class="lang-tag">C++</span>
+                </div>
+                <div class="gist-body">
+                    <pre><code class="code-block"><span class="code-comment">// REST OF SETUP NOT SHOWN</span>
+<span class="code-comment">// DMP</span>
+<span class="code-kw">bool</span> dmp_success = <span class="code-kw">true</span>;
+
+dmp_success &amp;= (<span class="code-fn">myICM.initializeDMP</span>() == ICM_20948_Stat_Ok);
+dmp_success &amp;= (<span class="code-fn">myICM.enableDMPSensor</span>(INV_ICM20948_SENSOR_GAME_ROTATION_VECTOR) == ICM_20948_Stat_Ok);
+dmp_success &amp;= (<span class="code-fn">myICM.setDMPODRrate</span>(DMP_ODR_Reg_Quat6, <span class="code-num">0</span>) == ICM_20948_Stat_Ok); <span class="code-comment">// max rate</span>
+dmp_success &amp;= (<span class="code-fn">myICM.enableFIFO</span>() == ICM_20948_Stat_Ok);
+dmp_success &amp;= (<span class="code-fn">myICM.enableDMP</span>() == ICM_20948_Stat_Ok);
+dmp_success &amp;= (<span class="code-fn">myICM.resetDMP</span>() == ICM_20948_Stat_Ok);
+dmp_success &amp;= (<span class="code-fn">myICM.resetFIFO</span>() == ICM_20948_Stat_Ok);
+
+<span class="code-kw">if</span> (!dmp_success) {
+    <span class="code-fn">Serial.println</span>(<span class="code-str">"DMP init failed!"</span>);
+    <span class="code-kw">while</span> (<span class="code-num">1</span>);
+}</code></pre>
+                </div>
+            </div>
+
+            <hr class="task-divider">
+
+            <h3>getYawFromDMP()</h3>
+            <p>Updates the global <code class="code-inline">pid_yaw</code> using DMP readings. Returns <code class="code-inline">true</code> if new data was received.</p>
+            <div class="gist">
+                <div class="gist-header">
+                    <span class="file-name">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5h16M4 12h16M4 18.5h16"/></svg>
+                        getYawFromDMP()
+                    </span>
+                    <span class="lang-tag">C++</span>
+                </div>
+                <div class="gist-body">
+                    <pre><code class="code-block"><span class="code-kw">bool</span> <span class="code-fn">getYawFromDMP</span>() {
+    <span class="code-kw">bool</span> newYaw = <span class="code-kw">false</span>;
+    icm_20948_DMP_data_t data;
+    <span class="code-fn">myICM.readDMPdataFromFIFO</span>(&amp;data);
+    <span class="code-kw">if</span> ((myICM.status == ICM_20948_Stat_Ok) || (myICM.status == ICM_20948_Stat_FIFOMoreDataAvail)) {
+        <span class="code-kw">if</span> ((data.header &amp; DMP_header_bitmap_Quat6) &gt; <span class="code-num">0</span>) {
+            <span class="code-kw">double</span> q1 = ((<span class="code-kw">double</span>)data.Quat6.Data.Q1) / <span class="code-num">1073741824.0</span>;
+            <span class="code-kw">double</span> q2 = ((<span class="code-kw">double</span>)data.Quat6.Data.Q2) / <span class="code-num">1073741824.0</span>;
+            <span class="code-kw">double</span> q3 = ((<span class="code-kw">double</span>)data.Quat6.Data.Q3) / <span class="code-num">1073741824.0</span>;
+            <span class="code-kw">double</span> q0 = <span class="code-fn">sqrt</span>(<span class="code-num">1.0</span> - ((q1 * q1) + (q2 * q2) + (q3 * q3)));
+
+            <span class="code-kw">double</span> qw = q0;
+            <span class="code-kw">double</span> qx = q2;
+            <span class="code-kw">double</span> qy = q1;
+            <span class="code-kw">double</span> qz = -q3;
+
+            <span class="code-comment">// yaw (z-axis rotation)</span>
+            <span class="code-kw">double</span> t3 = +<span class="code-num">2.0</span> * (qw * qz + qx * qy);
+            <span class="code-kw">double</span> t4 = +<span class="code-num">1.0</span> - <span class="code-num">2.0</span> * (qy * qy + qz * qz);
+            pid_turn_yaw = <span class="code-fn">atan2</span>(t3, t4) * <span class="code-num">180.0</span> / PI;
+            newYaw = <span class="code-kw">true</span>;
+        }
+    }
+    <span class="code-kw">if</span> (myICM.status != ICM_20948_Stat_FIFOMoreDataAvail) <span class="code-fn">delay</span>(<span class="code-num">10</span>);
+    <span class="code-kw">return</span> newYaw;
+}</code></pre>
+                </div>
+            </div>
+
+            <hr class="task-divider">
+
+            <h3>Yaw Visualization</h3>
+            <p>I quickly verified I was receiving correct yaw angles using the Serial Plotter:</p>
+            <div class="video-embed">
+                <iframe src="https://www.youtube.com/embed/JeE1FZJ5Z_E?si=JbIsl20jG0_6GDQV" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+            </div>
+
+            <div class="callout">
+                <p>Before implementing DMP for yaw, I tried using only the gyroscope-calculated yaw, but this builds integration error over time &mdash; even when the robot is stationary, yaw slowly drifts. The DMP handles this by fusing gyroscope, accelerometer, and magnetometer data, making it far more suitable for PID turning.</p>
+            </div>
+        </section>
+
+        <hr class="section-divider">
+
+        <!-- ── Implementing Orientation Control ──────────────────────────── -->
+        <section id="implementation">
+            <h2>Implementing Orientation Control with PID</h2>
+            <p>After setting up the DMP for yaw angles, I implemented orientation control with PD. Similar to the last lab, I wanted a simple workflow for starting/ending the PID process and sending collected data over Bluetooth. I added the following global variables:</p>
+
+            <div class="gist">
+                <div class="gist-header">
+                    <span class="file-name">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5h16M4 12h16M4 18.5h16"/></svg>
+                        Global Variables
+                    </span>
+                    <span class="lang-tag">C++</span>
+                </div>
+                <div class="gist-body">
+                    <pre><code class="code-block"><span class="code-kw">int</span> pid_turn_run_flag = <span class="code-num">0</span>;
+<span class="code-kw">const int</span> PID_TURN_DATA_LEN = <span class="code-num">1000</span>;
+<span class="code-kw">int</span> pid_turn_data_count = <span class="code-num">0</span>;
+<span class="code-kw">float</span> pid_turn_yaw;
+
+<span class="code-kw">float</span> turn_K_p = <span class="code-num">0.0</span>;
+<span class="code-kw">float</span> turn_K_i = <span class="code-num">0.0</span>;
+<span class="code-kw">float</span> turn_K_d = <span class="code-num">0.0</span>;
+<span class="code-kw">float</span> pid_turn_Kp_arr[PID_TURN_DATA_LEN];
+<span class="code-kw">float</span> pid_turn_Ki_arr[PID_TURN_DATA_LEN];
+<span class="code-kw">float</span> pid_turn_Kd_arr[PID_TURN_DATA_LEN];
+
+<span class="code-kw">float</span> pid_turn_start_time;
+<span class="code-kw">float</span> pid_turn_current_time;
+<span class="code-kw">float</span> pid_turn_last_time;
+<span class="code-kw">float</span> pid_turn_position_error = <span class="code-num">0.0</span>;
+<span class="code-kw">float</span> pid_turn_prev_error = <span class="code-num">0.0</span>;
+<span class="code-kw">float</span> pid_turn_integral_term = <span class="code-num">0.0</span>;
+<span class="code-kw">float</span> pid_turn_derivative_term = <span class="code-num">0.0</span>;
+<span class="code-kw">float</span> pid_turn_output = <span class="code-num">0.0</span>;
+
+<span class="code-kw">float</span> pid_turn_time_arr[PID_TURN_DATA_LEN];
+<span class="code-kw">float</span> pid_turn_yaw_arr[PID_TURN_DATA_LEN];
+<span class="code-kw">float</span> pid_turn_error_arr[PID_TURN_DATA_LEN];
+<span class="code-kw">float</span> pid_turn_left_motor_arr[PID_TURN_DATA_LEN];
+<span class="code-kw">float</span> pid_turn_right_motor_arr[PID_TURN_DATA_LEN];</code></pre>
+                </div>
+            </div>
+
+            <p>I then added three commands, similar to the last lab.</p>
+
+            <hr class="task-divider">
+
+            <h3>START_PID_TURN</h3>
+            <p>Receives Kp, Ki, Kd, and the target yaw from Python, then resets global variables and records the starting yaw as an offset.</p>
+            <div class="gist">
+                <div class="gist-header">
+                    <span class="file-name">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5h16M4 12h16M4 18.5h16"/></svg>
+                        START_PID_TURN
+                    </span>
+                    <span class="lang-tag">C++</span>
+                </div>
+                <div class="gist-body">
+                    <pre><code class="code-block"><span class="code-kw">case</span> START_PID_TURN:
+    success = <span class="code-fn">robot_cmd.get_next_value</span>(turn_K_p); <span class="code-kw">if</span> (!success) <span class="code-kw">return</span>;
+    success = <span class="code-fn">robot_cmd.get_next_value</span>(turn_K_i); <span class="code-kw">if</span> (!success) <span class="code-kw">return</span>;
+    success = <span class="code-fn">robot_cmd.get_next_value</span>(turn_K_d); <span class="code-kw">if</span> (!success) <span class="code-kw">return</span>;
+    success = <span class="code-fn">robot_cmd.get_next_value</span>(pid_turn_target_yaw); <span class="code-kw">if</span> (!success) <span class="code-kw">return</span>;
+
+    pid_turn_data_count = <span class="code-num">0</span>;
+    pid_turn_prev_error = <span class="code-num">0</span>;
+    pid_turn_integral_term = <span class="code-num">0</span>;
+    pid_turn_position_error = <span class="code-num">0</span>;
+    pid_turn_derivative_term = <span class="code-num">0</span>;
+
+    <span class="code-fn">myICM.resetFIFO</span>();
+    <span class="code-fn">delay</span>(<span class="code-num">50</span>);
+    <span class="code-kw">while</span> (!<span class="code-fn">getYawFromDMP</span>()) {}
+    pid_turn_yaw_offset = pid_turn_yaw;
+
+    pid_turn_start_time = <span class="code-fn">millis</span>();
+    pid_turn_current_time = <span class="code-fn">millis</span>();
+    pid_turn_last_time = <span class="code-fn">millis</span>();
+
+    pid_turn_run_flag = <span class="code-num">1</span>;
+    <span class="code-fn">Serial.print</span>(<span class="code-str">"PID for TURN started!"</span>);
+    <span class="code-kw">break</span>;</code></pre>
+                </div>
+            </div>
+
+            <hr class="task-divider">
+
+            <h3>STOP_PID_TURN</h3>
+            <p>Stops the current PID run and halts the motors.</p>
+            <div class="gist">
+                <div class="gist-header">
+                    <span class="file-name">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5h16M4 12h16M4 18.5h16"/></svg>
+                        STOP_PID_TURN
+                    </span>
+                    <span class="lang-tag">C++</span>
+                </div>
+                <div class="gist-body">
+                    <pre><code class="code-block"><span class="code-kw">case</span> STOP_PID_TURN:
+    pid_turn_run_flag = <span class="code-num">0</span>;
+    <span class="code-fn">stop</span>();
+    <span class="code-fn">Serial.println</span>(<span class="code-str">"PID for TURN stopped!"</span>);
+    <span class="code-kw">break</span>;</code></pre>
+                </div>
+            </div>
+
+            <hr class="task-divider">
+
+            <h3>SEND_PID_TURN_DATA</h3>
+            <p>Sends time, yaw, error, motor values, and PID term contributions over Bluetooth.</p>
+            <div class="gist">
+                <div class="gist-header">
+                    <span class="file-name">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5h16M4 12h16M4 18.5h16"/></svg>
+                        sendOrientationPIDDataOverBluetooth()
+                    </span>
+                    <span class="lang-tag">C++</span>
+                </div>
+                <div class="gist-body">
+                    <pre><code class="code-block"><span class="code-kw">void</span> <span class="code-fn">sendOrientationPIDDataOverBluetooth</span>() {
+    <span class="code-fn">Serial.print</span>(<span class="code-str">"Sending "</span>); <span class="code-fn">Serial.print</span>(pid_turn_data_count); <span class="code-fn">Serial.println</span>(<span class="code-str">" PID TURN samples"</span>);
+    <span class="code-kw">int</span> i = <span class="code-num">0</span>;
+    <span class="code-kw">while</span> (i &lt; pid_turn_data_count) {
+        <span class="code-fn">tx_estring_value.clear</span>();
+        <span class="code-fn">tx_estring_value.append</span>(pid_turn_time_arr[i]);        <span class="code-fn">tx_estring_value.append</span>(<span class="code-str">","</span>);
+        <span class="code-fn">tx_estring_value.append</span>(pid_turn_yaw_arr[i]);         <span class="code-fn">tx_estring_value.append</span>(<span class="code-str">","</span>);
+        <span class="code-fn">tx_estring_value.append</span>(pid_turn_error_arr[i]);       <span class="code-fn">tx_estring_value.append</span>(<span class="code-str">","</span>);
+        <span class="code-fn">tx_estring_value.append</span>(pid_turn_left_motor_arr[i]);  <span class="code-fn">tx_estring_value.append</span>(<span class="code-str">","</span>);
+        <span class="code-fn">tx_estring_value.append</span>(pid_turn_right_motor_arr[i]); <span class="code-fn">tx_estring_value.append</span>(<span class="code-str">","</span>);
+        <span class="code-fn">tx_estring_value.append</span>(pid_turn_Kp_arr[i]);          <span class="code-fn">tx_estring_value.append</span>(<span class="code-str">","</span>);
+        <span class="code-fn">tx_estring_value.append</span>(pid_turn_Ki_arr[i]);          <span class="code-fn">tx_estring_value.append</span>(<span class="code-str">","</span>);
+        <span class="code-fn">tx_estring_value.append</span>(pid_turn_Kd_arr[i]);
+        <span class="code-fn">tx_characteristic_string.writeValue</span>(<span class="code-fn">tx_estring_value.c_str</span>());
+        <span class="code-fn">delay</span>(<span class="code-num">10</span>);
+        i++;
+    }
+}</code></pre>
+                </div>
+            </div>
+
+            <hr class="task-divider">
+
+            <p>With the commands in place, I implemented the PID loop itself. The main loop checks <code class="code-inline">pid_turn_run_flag</code> and calls <code class="code-inline">runOrientationPIDIteration()</code> each cycle.</p>
+
+            <h3>Main Loop</h3>
+            <div class="gist">
+                <div class="gist-header">
+                    <span class="file-name">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5h16M4 12h16M4 18.5h16"/></svg>
+                        loop()
+                    </span>
+                    <span class="lang-tag">C++</span>
+                </div>
+                <div class="gist-body">
+                    <pre><code class="code-block"><span class="code-kw">void</span> <span class="code-fn">loop</span>() {
+    <span class="code-comment">// REST OF FUNCTION NOT SHOWN</span>
+    <span class="code-kw">if</span> (pid_turn_run_flag) {
+        <span class="code-fn">runOrientationPIDIteration</span>();
+    }
+}</code></pre>
+                </div>
+            </div>
+
+            <h3>runOrientationPIDIteration()</h3>
+            <div class="gist">
+                <div class="gist-header">
+                    <span class="file-name">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5h16M4 12h16M4 18.5h16"/></svg>
+                        runOrientationPIDIteration()
+                    </span>
+                    <span class="lang-tag">C++</span>
+                </div>
+                <div class="gist-body">
+                    <pre><code class="code-block"><span class="code-kw">void</span> <span class="code-fn">runOrientationPIDIteration</span>() {
+    <span class="code-kw">if</span> (pid_turn_data_count >= PID_TURN_DATA_LEN) {
+        pid_turn_run_flag = <span class="code-num">0</span>;
+        <span class="code-fn">stop</span>();
+        <span class="code-fn">Serial.println</span>(<span class="code-str">"PID orientation buffer full, stopping"</span>);
+        <span class="code-kw">return</span>;
+    }
+    <span class="code-comment">// get latest yaw</span>
+    <span class="code-kw">bool</span> newYaw = <span class="code-fn">getYawFromDMP</span>();
+    <span class="code-kw">if</span> (!newYaw) <span class="code-kw">return</span>;
+    pid_turn_last_time = pid_turn_current_time;
+    pid_turn_current_time = <span class="code-fn">millis</span>();
+    <span class="code-kw">float</span> elapsed = pid_turn_current_time - pid_turn_start_time;
+    pid_turn_time_arr[pid_turn_data_count] = pid_turn_current_time;
+    <span class="code-kw">float</span> logged_yaw = pid_turn_yaw - pid_turn_yaw_offset;
+    pid_turn_yaw_arr[pid_turn_data_count]  = logged_yaw;
+
+    <span class="code-fn">calculateSpeedWithOrientationPID</span>(pid_turn_data_count, turn_K_p, turn_K_i, turn_K_d, elapsed, pid_turn_yaw);
+    pid_turn_data_count++;
+}</code></pre>
+                </div>
+            </div>
+
+            <h3>calculateSpeedWithOrientationPID()</h3>
+            <div class="gist">
+                <div class="gist-header">
+                    <span class="file-name">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5h16M4 12h16M4 18.5h16"/></svg>
+                        calculateSpeedWithOrientationPID()
+                    </span>
+                    <span class="lang-tag">C++</span>
+                </div>
+                <div class="gist-body">
+                    <pre><code class="code-block"><span class="code-kw">void</span> <span class="code-fn">calculateSpeedWithOrientationPID</span>(<span class="code-kw">int</span> turn_arr_index, <span class="code-kw">float</span> turn_K_p,
+                                           <span class="code-kw">float</span> turn_K_i, <span class="code-kw">float</span> turn_K_d,
+                                           <span class="code-kw">float</span> elapsed_time, <span class="code-kw">float</span> current_yaw) {
+    <span class="code-kw">float</span> dt = (pid_turn_current_time - pid_turn_last_time) / <span class="code-num">1000.0</span>;
+    <span class="code-kw">if</span> (dt &lt;= <span class="code-num">0</span>) dt = <span class="code-num">0.001</span>;
+
+    <span class="code-comment">// Proportional term</span>
+    <span class="code-kw">float</span> relative_yaw = current_yaw - pid_turn_yaw_offset;
+    <span class="code-kw">while</span> (relative_yaw &gt;  <span class="code-num">180.0</span>) relative_yaw -= <span class="code-num">360.0</span>;
+    <span class="code-kw">while</span> (relative_yaw &lt; -<span class="code-num">180.0</span>) relative_yaw += <span class="code-num">360.0</span>;
+    pid_turn_position_error = relative_yaw - pid_turn_target_yaw;
+    <span class="code-kw">while</span> (pid_turn_position_error &gt;  <span class="code-num">180.0</span>) pid_turn_position_error -= <span class="code-num">360.0</span>;
+    <span class="code-kw">while</span> (pid_turn_position_error &lt; -<span class="code-num">180.0</span>) pid_turn_position_error += <span class="code-num">360.0</span>;
+
+    <span class="code-comment">// Integral term</span>
+    pid_turn_integral_term += pid_turn_position_error * dt;
+    pid_turn_integral_term = <span class="code-fn">constrain</span>(pid_turn_integral_term, <span class="code-num">-200.0</span>, <span class="code-num">200.0</span>);
+
+    <span class="code-comment">// Derivative term (on measurement, with low-pass filter)</span>
+    <span class="code-kw">float</span> raw_derivative = -(pid_turn_yaw - pid_turn_prev_yaw) / dt;
+    pid_turn_filtered_derivative = <span class="code-num">0.1</span> * raw_derivative + <span class="code-num">0.9</span> * pid_turn_filtered_derivative;
+    pid_turn_derivative_term = pid_turn_filtered_derivative;
+    pid_turn_prev_yaw = pid_turn_yaw;
+
+    <span class="code-kw">float</span> P_term = turn_K_p * pid_turn_position_error;
+    <span class="code-kw">float</span> I_term = turn_K_i * pid_turn_integral_term;
+    <span class="code-kw">float</span> D_term = turn_K_d * pid_turn_derivative_term;
+    <span class="code-kw">int</span> turn_speed = (<span class="code-kw">int</span>)(P_term + I_term + D_term);
+
+    <span class="code-comment">// Clamp magnitude</span>
+    turn_speed = <span class="code-fn">constrain</span>(turn_speed, -maxSpeed, maxSpeed);
+
+    <span class="code-comment">// Deadband</span>
+    <span class="code-kw">if</span> (<span class="code-fn">abs</span>(turn_speed) &lt; <span class="code-num">1</span>) {
+        <span class="code-fn">stop</span>();
+        turn_speed = <span class="code-num">0</span>;
+    } <span class="code-kw">else</span> {
+        <span class="code-kw">if</span> (turn_speed &gt; <span class="code-num">0</span> &amp;&amp; turn_speed &lt;  minTurnSpeed) turn_speed =  minTurnSpeed;
+        <span class="code-kw">if</span> (turn_speed &lt; <span class="code-num">0</span> &amp;&amp; turn_speed &gt; -minTurnSpeed) turn_speed = -minTurnSpeed;
+
+        <span class="code-comment">// Positive error = yaw too high = turn left (counter-clockwise)</span>
+        <span class="code-kw">if</span> (turn_speed &gt; <span class="code-num">0</span>) {
+            <span class="code-fn">turn_left</span>(turn_speed);
+        } <span class="code-kw">else</span> {
+            <span class="code-fn">turn_right</span>(-turn_speed);
+        }
+    }
+
+    pid_turn_prev_error = pid_turn_position_error;
+    pid_turn_last_time = pid_turn_current_time;
+    pid_turn_output = (<span class="code-kw">float</span>)turn_speed;
+
+    pid_turn_error_arr[turn_arr_index]       = pid_turn_position_error;
+    pid_turn_left_motor_arr[turn_arr_index]  = (turn_speed &gt; <span class="code-num">0</span>) ?  turn_speed : <span class="code-num">0</span>;
+    pid_turn_right_motor_arr[turn_arr_index] = (turn_speed &gt; <span class="code-num">0</span>) ? <span class="code-num">0</span> : -turn_speed;
+    pid_turn_Kp_arr[turn_arr_index]          = P_term;
+    pid_turn_Ki_arr[turn_arr_index]          = I_term;
+    pid_turn_Kd_arr[turn_arr_index]          = D_term;
+}</code></pre>
+                </div>
+            </div>
+        </section>
+
+        <hr class="section-divider">
+
+        <!-- ── Testing ────────────────────────────────────────────────────── -->
+        <section id="testing">
+            <h2>Testing Orientation Control with PID</h2>
+            <p>I tested orientation control using the following Python workflow, which sends PID gains and a target angle, waits for the run to complete, then retrieves the data over Bluetooth.</p>
+
+            <div class="gist">
+                <div class="gist-header">
+                    <span class="file-name">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5h16M4 12h16M4 18.5h16"/></svg>
+                        run_pid_turn.py
+                    </span>
+                    <span class="lang-tag">Python</span>
+                </div>
+                <div class="gist-body">
+                    <pre><code class="code-block"><span class="code-kw">def</span> <span class="code-fn">run_pid_turn</span>(kp, ki, kd, pid_time_span, filename):
+    <span class="code-kw">def</span> <span class="code-fn">pid_handler</span>(sender_uuid, data):
+        datapoint = <span class="code-fn">data.decode</span>(<span class="code-str">"utf-8"</span>).<span class="code-fn">strip</span>()
+        parts = datapoint.<span class="code-fn">split</span>(<span class="code-str">","</span>)
+        <span class="code-kw">if</span> <span class="code-fn">len</span>(parts) &lt; <span class="code-num">8</span>:
+            <span class="code-kw">return</span>
+        t, yaw, error           = parts[<span class="code-num">0</span>], parts[<span class="code-num">1</span>], parts[<span class="code-num">2</span>]
+        left_motor, right_motor = parts[<span class="code-num">3</span>], parts[<span class="code-num">4</span>]
+        kp_val, ki_val, kd_val  = parts[<span class="code-num">5</span>], parts[<span class="code-num">6</span>], parts[<span class="code-num">7</span>]
+        <span class="code-kw">with</span> <span class="code-fn">open</span>(filename, <span class="code-str">"a+"</span>) <span class="code-kw">as</span> f:
+            f.<span class="code-fn">seek</span>(<span class="code-num">0</span>)
+            <span class="code-kw">if</span> f.<span class="code-fn">read</span>(<span class="code-num">1</span>) == <span class="code-str">""</span>:
+                f.<span class="code-fn">write</span>(<span class="code-str">"Time,Yaw,Error,LeftMotor,RightMotor,Kp,Ki,Kd\n"</span>)
+            f.<span class="code-fn">write</span>(<span class="code-str">f"{t},{yaw},{error},{left_motor},{right_motor},{kp_val},{ki_val},{kd_val}\n"</span>)
+
+    target_angle = <span class="code-num">90.0</span>
+    ble.<span class="code-fn">send_command</span>(CMD.START_PID_TURN, <span class="code-str">f"{kp}|{ki}|{kd}|{target_angle}"</span>)
+    <span class="code-fn">time.sleep</span>(pid_time_span)
+    ble.<span class="code-fn">send_command</span>(CMD.STOP_PID_TURN, <span class="code-str">""</span>)
+    <span class="code-fn">time.sleep</span>(<span class="code-num">0.5</span>)
+
+    ble.<span class="code-fn">start_notify</span>(ble.uuid[<span class="code-str">'RX_STRING'</span>], pid_handler)
+    ble.<span class="code-fn">send_command</span>(CMD.SEND_PID_TURN_DATA, <span class="code-str">""</span>)
+
+kp = <span class="code-num">0.22</span>
+ki = <span class="code-num">0.0</span>
+kd = <span class="code-num">0.08</span>
+timespan = <span class="code-num">10</span>  <span class="code-comment"># seconds</span>
+
+<span class="code-fn">run_pid_turn</span>(kp, ki, kd, timespan, <span class="code-str">"pid_orientation_run.csv"</span>)</code></pre>
+                </div>
+            </div>
+
+            <p>When I began testing, the PWM signals for turning were not large enough to overcome static friction. I added minimum and maximum turn speed constants:</p>
+
+            <div class="gist">
+                <div class="gist-header">
+                    <span class="file-name">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5h16M4 12h16M4 18.5h16"/></svg>
+                        Turn Speed Limits
+                    </span>
+                    <span class="lang-tag">C++</span>
+                </div>
+                <div class="gist-body">
+                    <pre><code class="code-block"><span class="code-kw">const int</span> minTurnSpeed = <span class="code-num">180</span>;
+<span class="code-kw">const int</span> maxTurnSpeed = <span class="code-num">250</span>;</code></pre>
+                </div>
+            </div>
+
+            <p>I tuned with a 90-degree target angle. I started with only the proportional term, then added the derivative term. I also updated <code class="code-inline">calculateSpeedWithOrientationPID()</code> so that the input angle is relative to the starting yaw &mdash; sending 90&deg; turns the robot 90&deg; from wherever it starts, which is useful for waypoint navigation later.</p>
+
+            <hr class="task-divider">
+
+            <h3>Kp = 0.2</h3>
+            <p>Turning is pretty slow.</p>
+            <div class="video-embed">
+                <iframe src="https://www.youtube.com/embed/_ybvuOAmR1A?si=-B5-yrk4DpRNgF0P" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+            </div>
+
+            <hr class="task-divider">
+
+            <h3>Kp = 0.5</h3>
+            <p>Good turning speed. Slightly overshoots but adjusts well.</p>
+            <div class="video-embed">
+                <iframe src="https://www.youtube.com/embed/nyhqkZtBYq4?si=djOPnxSldjsPyOID" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+            </div>
+
+            <hr class="task-divider">
+
+            <h3>Kp = 0.5, Kd = 0.3</h3>
+            <p>Derivative is far too high &mdash; the robot becomes unstable.</p>
+            <div class="video-embed">
+                <iframe src="https://www.youtube.com/embed/MkTqQqzxHOQ?si=Vj_Uh9EZuFH8efLk" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+            </div>
+
+            <p>Because the derivative term is applied to an already-integrated signal (the yaw angle from the gyroscope), it amplifies noise significantly. I switched to derivative-on-measurement with a low-pass filter to handle this:</p>
+
+            <div class="gist">
+                <div class="gist-header">
+                    <span class="file-name">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5h16M4 12h16M4 18.5h16"/></svg>
+                        Filtered Derivative on Measurement
+                    </span>
+                    <span class="lang-tag">C++</span>
+                </div>
+                <div class="gist-body">
+                    <pre><code class="code-block"><span class="code-kw">float</span> raw_derivative = -(pid_turn_yaw - pid_turn_prev_yaw) / dt;
+pid_turn_filtered_derivative = <span class="code-num">0.1</span> * raw_derivative + <span class="code-num">0.9</span> * pid_turn_filtered_derivative;
+pid_turn_derivative_term = pid_turn_filtered_derivative;
+pid_turn_prev_yaw = pid_turn_yaw;</code></pre>
+                </div>
+            </div>
+
+            <p>During testing I also ran into several issues: in some trials the robot would spin a full revolution at startup before PID engaged. This was fixed by flushing the DMP FIFO queue on <code class="code-inline">START_PID_TURN</code>. I also discovered that two wires connecting the left motor driver to the Artemis had detached, which took a long time to find.</p>
+
+            <hr class="task-divider">
+
+            <h3>Optimal Result &mdash; Kp = 0.3, Kd = 0.01</h3>
+            <p>After debugging and tuning, the robot reliably turns to 90&deg; and holds position.</p>
+            <div class="video-embed">
+                <iframe src="https://www.youtube.com/embed/nVoiGV70k3Q?si=xfjOrZFuyh1SG0ZF" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+            </div>
+            <img class="media-img" src="media/lab6/optimal_test.png" alt="PID orientation data plot – optimal tuning">
+        </section>
+
+        <hr class="section-divider">
+
+        <!-- ── Waypoints ──────────────────────────────────────────────────── -->
+        <section id="waypoints">
+            <h2>Waypoints</h2>
+            <p>To verify that the robot could accept a sequence of different target angles, I sent multiple <code class="code-inline">START_PID_TURN</code> commands in succession:</p>
+
+            <div class="gist">
+                <div class="gist-header">
+                    <span class="file-name">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5h16M4 12h16M4 18.5h16"/></svg>
+                        waypoints.py
+                    </span>
+                    <span class="lang-tag">Python</span>
+                </div>
+                <div class="gist-body">
+                    <pre><code class="code-block">Kp = <span class="code-num">0.3</span>
+Ki = <span class="code-num">0.0</span>
+Kd = <span class="code-num">0.01</span>
+
+ble.<span class="code-fn">send_command</span>(CMD.START_PID_TURN, <span class="code-str">f"{Kp}|{Ki}|{Kd}|90.0"</span>)
+<span class="code-fn">time.sleep</span>(<span class="code-num">2</span>)
+ble.<span class="code-fn">send_command</span>(CMD.START_PID_TURN, <span class="code-str">f"{Kp}|{Ki}|{Kd}|90.0"</span>)
+<span class="code-fn">time.sleep</span>(<span class="code-num">2</span>)
+ble.<span class="code-fn">send_command</span>(CMD.START_PID_TURN, <span class="code-str">f"{Kp}|{Ki}|{Kd}|180.0"</span>)
+<span class="code-fn">time.sleep</span>(<span class="code-num">2</span>)
+ble.<span class="code-fn">send_command</span>(CMD.START_PID_TURN, <span class="code-str">f"{Kp}|{Ki}|{Kd}|-45.0"</span>)</code></pre>
+                </div>
+            </div>
+
+            <div class="video-embed">
+                <iframe src="https://www.youtube.com/embed/XD4ZJp_kPcU?si=mwKifnl-f--Nwj1_" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+            </div>
+        </section>
+
+        <hr class="section-divider">
+
+        <!-- ── Collaboration ──────────────────────────────────────────────── -->
+        <section id="collaboration">
+            <h2>Collaboration</h2>
+            <p>I referenced <a class="student-link" href="https://correial.github.io/LuccaFastRobots/" target="_blank" rel="noopener">Lucca Correia</a>'s lab page for help with implementing the PWM settings and derivative kick functionality. I ran into many of the same problems he did and his write-up was very helpful. I also used Claude for debugging &mdash; I lost track of variables and sometimes didn't update them in the correct place or at all. Specifically, I used Claude to help implement the relative orientation functionality: I wanted the robot to turn to the received angle command relative to its starting position. I realized after some time that I would boot up the robot and move it, shifting the initial yaw, so when the <code class="code-inline">START_PID_TURN</code> command was finally received the initial yaw was way off. Claude helped me fix this by resetting the FIFO queue when the command is received, so that 0&deg; is always set to wherever the car is sitting at that moment. I also used Claude to style this website.</p>
+        </section>
+    </main>
+</body>
+</html>
