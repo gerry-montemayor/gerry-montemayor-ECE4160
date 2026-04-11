@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Lab 9: Mapping</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        :root {
+            --bg-color: #10151b;
+            --text-color: #e6d8c0;
+            --card-bg: #161c24;
+            --card-border: #1f262f;
+            --card-outline: #26303a;
+            --muted: rgba(230, 216, 192, 0.8);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 1.05rem;
+            line-height: 1.8;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        nav {
+            width: fit-content;
+            max-width: 720px;
+            margin: 28px auto 48px;
+            padding: 12px 18px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            outline: 1px solid var(--card-outline);
+            border-radius: 14px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+        }
+
+        nav a {
+            color: var(--text-color);
+            text-decoration: none;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 12px;
+            border-radius: 10px;
+            transition: background-color 0.2s ease, transform 0.2s ease;
+        }
+
+        nav a:hover {
+            background-color: rgba(230, 216, 192, 0.12);
+            transform: translateY(-1px);
+        }
+
+        nav svg {
+            width: 28px;
+            height: 28px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 1.6;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        main {
+            width: 100%;
+            max-width: 1000px;
+            padding: 0 24px 96px;
+            display: grid;
+            gap: 36px;
+        }
+
+        header h1 {
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            color: #9ae6c4;
+        }
+
+        header p {
+            color: var(--muted);
+        }
+
+        section {
+            background: transparent;
+            border: none;
+            outline: none;
+            border-radius: 0;
+            padding: 0;
+            box-shadow: none;
+        }
+
+        h2 {
+            font-size: 1.75rem;
+            margin: 0 0 14px;
+            color: #9ae6c4;
+        }
+
+        h3 {
+            font-size: 1.3rem;
+            margin: 0 0 12px;
+            color: #9ae6c4;
+        }
+
+        p {
+            margin: 0 0 14px;
+        }
+
+        ul {
+            margin: 12px 0 14px 20px;
+            color: var(--muted);
+        }
+
+        ul li {
+            margin-bottom: 6px;
+        }
+
+        .subdued {
+            color: var(--muted);
+        }
+
+        a.student-link {
+            color: #8de4b2;
+            text-decoration: none;
+            border-bottom: 1px solid rgba(141, 228, 178, 0.4);
+            transition: color 0.2s ease, border-color 0.2s ease;
+        }
+
+        a.student-link:hover {
+            color: #a6f0c7;
+            border-color: rgba(166, 240, 199, 0.7);
+        }
+
+        a.student-link:visited {
+            color: #8de4b2;
+            border-color: rgba(141, 228, 178, 0.4);
+        }
+
+        .gist {
+            margin: 16px 0;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid #1f2630;
+            background: linear-gradient(180deg, #131c28 0%, #101722 100%);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 10px 22px rgba(0, 0, 0, 0.35);
+        }
+
+        .gist-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 12px;
+            background: #0f1620;
+            border-bottom: 1px solid #1f2630;
+            color: rgba(230, 216, 192, 0.9);
+            font-size: 1rem;
+        }
+
+        .gist-header .file-name {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .gist-header svg {
+            width: 18px;
+            height: 18px;
+            stroke: currentColor;
+            fill: none;
+        }
+
+        .lang-tag {
+            background: #1f2a36;
+            color: #cdd7e1;
+            border: 1px solid #2d3744;
+            padding: 2px 8px;
+            border-radius: 999px;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .gist-body {
+            padding: 14px;
+            background: #0f1722;
+        }
+
+        pre {
+            margin: 0;
+            padding: 0;
+            overflow-x: auto;
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+            font-size: 0.98rem;
+            line-height: 1.6;
+            color: #e9edf5;
+        }
+
+        code {
+            background: transparent;
+        }
+
+        .code-block {
+            display: block;
+            white-space: pre;
+        }
+
+        .code-inline {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 6px;
+            background: #0f1722;
+            border: 1px solid #1f2630;
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+            font-size: 0.95rem;
+            color: #e03a4f;
+            line-height: 1.3;
+        }
+
+        .code-kw     { color: #8ad1ff; }
+        .code-fn     { color: #a3d9a5; }
+        .code-str    { color: #ffd48a; }
+        .code-num    { color: #f3a5ff; }
+        .code-comment{ color: #8da0b3; }
+        .code-op     { color: #c4b5ff; }
+        .code-type   { color: #8ad1ff; }
+        .code-pp     { color: #e0a0ff; }
+
+        .media-img {
+            display: block;
+            max-width: 760px;
+            max-height: 520px;
+            width: auto;
+            height: auto;
+            margin: 10px auto 16px;
+            border-radius: 10px;
+            border: 1px solid #2d3642;
+            background: #0f1722;
+            padding: 6px;
+        }
+
+        .video-embed {
+            position: relative;
+            width: 100%;
+            max-width: 860px;
+            aspect-ratio: 16 / 9;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #2d3642;
+            background: #0f1722;
+            margin: 12px auto 20px;
+        }
+
+        .video-embed iframe,
+        .video-embed video {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+            object-fit: contain;
+        }
+
+        .section-divider {
+            border: 0;
+            height: 1px;
+            background: #2e3641;
+            margin: 8px 0 28px;
+        }
+
+        .task-divider {
+            border: 0;
+            height: 1px;
+            background: none;
+            border-top: 1px dashed #3b4552;
+            margin: 28px 0;
+        }
+
+        .callout {
+            border-left: 4px solid #9ae6c4;
+            padding: 10px 14px;
+            background: #0f1623;
+            border-radius: 10px;
+            color: var(--muted);
+            margin: 10px 0 16px;
+        }
+
+        .callout p:last-child {
+            margin-bottom: 0;
+        }
+
+        .kv-list {
+            list-style: none;
+            margin: 0 0 14px;
+            padding: 0;
+        }
+
+        .kv-list li {
+            padding: 4px 0;
+            color: var(--muted);
+        }
+
+        .kv-list li strong {
+            color: var(--text-color);
+        }
+
+        .img-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+            margin: 10px 0 16px;
+        }
+
+        .img-row .media-img {
+            margin: 0;
+            flex: 1 1 340px;
+            max-width: 460px;
+        }
+
+        @media (max-width: 640px) {
+            nav {
+                flex-wrap: wrap;
+            }
+            header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="index.html">
+            <svg aria-hidden="true" viewBox="0 0 24 24">
+                <path d="M4 10.75 12 4l8 6.75"/>
+                <path d="M5.5 11.75V20h4.5v-4.75h4V20h4.5v-8.25"/>
+            </svg>
+            <span>Home</span>
+        </a>
+        <a href="labs.html">
+            <svg aria-hidden="true" viewBox="0 0 24 24">
+                <path d="M4.5 6.5h5l1.5 2H19a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1h-14a1 1 0 0 1-1-1v-9a1 1 0 0 1 1-1Z"/>
+            </svg>
+            <span>Labs</span>
+        </a>
+    </nav>
+
+    <main>
+        <header>
+            <h1>Lab 9: Mapping</h1>
+            <p>Goal: Spin the robot 360° at four marked locations in a room, collect distance readings, then stitch everything together into a map.</p>
+        </header>
+
+        <!-- ── Overview ───────────────────────────────────────────────────── -->
+        <section id="overview">
+            <p>For this lab, I decided to perform Orientation Control, meaning I will be using the orientation PID controller I implemented in lab 6. With the PID controller (or in my case just PD), the robot will rotate in 25 degree increments and record the distance with the ToF sensor at each degree.</p>
+            <p>The added implementation is simple, as I already have the orientation code complete. The idea is to send orientation commands to the robot, and once the robot reaches the target angle, record a distance. After completing a full circle, I will have polar coordinates from one position. Once I calculate polar coordinates from all four positions, I will have the data necessary to build a map.</p>
+        </section>
+
+        <hr class="section-divider">
+
+        <!-- ── Implementation ─────────────────────────────────────────────── -->
+        <section id="implementation">
+            <h2>Implementation</h2>
+
+            <hr class="task-divider">
+
+            <h3>Global Variables</h3>
+            <p>First, I added the following global variables:</p>
+
+            <div class="gist">
+                <div class="gist-header">
+                    <span class="file-name">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5h16M4 12h16M4 18.5h16"/></svg>
+                        Global Variables
+                    </span>
+                    <span class="lang-tag">C++</span>
+                </div>
+                <div class="gist-body">
+                    <pre><code class="code-block"><span class="code-kw">const</span> <span class="code-kw">int</span> SCAN_DATA_LEN = <span class="code-num">50</span>;
+<span class="code-kw">int</span>   scan_count       = <span class="code-num">0</span>;
+<span class="code-kw">float</span> scan_orientation = <span class="code-num">0</span>;
+<span class="code-kw">float</span> scan_distance    = <span class="code-num">0.0</span>;
+<span class="code-kw">int</span>   scan_angles[SCAN_DATA_LEN];
+<span class="code-kw">float</span> scan_points[SCAN_DATA_LEN];</code></pre>
+                </div>
+            </div>
+
+            <hr class="task-divider">
+
+            <h3>MAP_SCAN</h3>
+            <p>Next, I added the following command for collecting a data point. It accepts PID gains and a target yaw angle, resets the controller state, and starts the orientation PID run.</p>
+
+            <div class="gist">
+                <div class="gist-header">
+                    <span class="file-name">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5h16M4 12h16M4 18.5h16"/></svg>
+                        MAP_SCAN
+                    </span>
+                    <span class="lang-tag">C++</span>
+                </div>
+                <div class="gist-body">
+                    <pre><code class="code-block"><span class="code-kw">case</span> MAP_SCAN:
+    success = <span class="code-fn">robot_cmd.get_next_value</span>(turn_K_p); <span class="code-kw">if</span> (!success) <span class="code-kw">return</span>;
+    success = <span class="code-fn">robot_cmd.get_next_value</span>(turn_K_i); <span class="code-kw">if</span> (!success) <span class="code-kw">return</span>;
+    success = <span class="code-fn">robot_cmd.get_next_value</span>(turn_K_d); <span class="code-kw">if</span> (!success) <span class="code-kw">return</span>;
+    success = <span class="code-fn">robot_cmd.get_next_value</span>(pid_turn_target_yaw); <span class="code-kw">if</span> (!success) <span class="code-kw">return</span>;
+    success = <span class="code-fn">robot_cmd.get_next_value</span>(scan_count); <span class="code-kw">if</span> (!success) <span class="code-kw">return</span>;
+
+    pid_turn_data_count       = <span class="code-num">0</span>;
+    pid_turn_prev_error       = <span class="code-num">0</span>;
+    pid_turn_integral_term    = <span class="code-num">0</span>;
+    pid_turn_position_error   = <span class="code-num">0</span>;
+    pid_turn_derivative_term  = <span class="code-num">0</span>;
+
+    <span class="code-fn">tofSensor1.startRanging</span>();
+    <span class="code-fn">myICM.resetFIFO</span>();
+    <span class="code-fn">delay</span>(<span class="code-num">50</span>);
+    <span class="code-kw">while</span> (!<span class="code-fn">getYawFromDMP</span>()) {}
+    pid_turn_yaw_offset = pid_turn_yaw;
+
+    pid_turn_start_time   = <span class="code-fn">millis</span>();
+    pid_turn_current_time = <span class="code-fn">millis</span>();
+    pid_turn_last_time    = <span class="code-fn">millis</span>();
+    pid_turn_run_flag     = <span class="code-num">1</span>;
+    <span class="code-kw">break</span>;</code></pre>
+                </div>
+            </div>
+
+            <hr class="task-divider">
+
+            <h3>SEND_SCAN_DATA</h3>
+            <p>This command sends all recorded scan data back over Bluetooth.</p>
+
+            <div class="gist">
+                <div class="gist-header">
+                    <span class="file-name">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5h16M4 12h16M4 18.5h16"/></svg>
+                        SEND_SCAN_DATA
+                    </span>
+                    <span class="lang-tag">C++</span>
+                </div>
+                <div class="gist-body">
+                    <pre><code class="code-block"><span class="code-kw">case</span> SEND_SCAN_DATA:
+    <span class="code-kw">for</span> (<span class="code-kw">int</span> i = <span class="code-num">0</span>; i &lt;= scan_count; i++) {
+        <span class="code-fn">tx_estring_value.clear</span>();
+        <span class="code-fn">tx_estring_value.append</span>(scan_angles[i]); <span class="code-fn">tx_estring_value.append</span>(<span class="code-str">","</span>);
+        <span class="code-fn">tx_estring_value.append</span>(scan_points[i]);
+        <span class="code-fn">tx_characteristic_string.writeValue</span>(<span class="code-fn">tx_estring_value.c_str</span>());
+        <span class="code-fn">delay</span>(<span class="code-num">10</span>);
+    }
+    <span class="code-kw">break</span>;</code></pre>
+                </div>
+            </div>
+
+            <hr class="task-divider">
+
+            <h3>Deadband Modification</h3>
+            <p>The only other change I needed to make was to the deadband portion of the previous OrientationPID code — when the target angle is reached, collect a ToF reading before stopping.</p>
+
+            <div class="gist">
+                <div class="gist-header">
+                    <span class="file-name">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5h16M4 12h16M4 18.5h16"/></svg>
+                        Deadband
+                    </span>
+                    <span class="lang-tag">C++</span>
+                </div>
+                <div class="gist-body">
+                    <pre><code class="code-block"><span class="code-comment">// Deadband</span>
+<span class="code-kw">if</span> (<span class="code-fn">abs</span>(pid_turn_position_error) &lt; <span class="code-num">2.0</span>) {
+    <span class="code-fn">getScanDistance</span>();
+    <span class="code-fn">stop</span>();
+    <span class="code-kw">return</span>;
+}</code></pre>
+                </div>
+            </div>
+
+            <p><span class="code-inline">getScanDistance()</span> simply collects the ToF datapoint and stores it alongside the target angle.</p>
+        </section>
+
+        <hr class="section-divider">
+
+        <!-- ── Mapping ────────────────────────────────────────────────────── -->
+        <section id="mapping">
+            <h2>Mapping</h2>
+
+            <hr class="task-divider">
+
+            <h3>Data Collection</h3>
+            <p>In order to collect the datapoints, I use the following Python code. This code collects 16 data points, starting at 0 and up to 350 in 25 degree increments.</p>
+
+            <div class="gist">
+                <div class="gist-header">
+                    <span class="file-name">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5h16M4 12h16M4 18.5h16"/></svg>
+                        scan.py
+                    </span>
+                    <span class="lang-tag">Python</span>
+                </div>
+                <div class="gist-body">
+                    <pre><code class="code-block">Kp = <span class="code-num">0.18</span>
+Ki = <span class="code-num">0.0</span>
+Kd = <span class="code-num">0.01</span>
+
+ble.<span class="code-fn">send_command</span>(CMD.MAP_SCAN, <span class="code-fn">f</span><span class="code-str">"{Kp}|{Ki}|{Kd}|0.0|{0}"</span>)
+<span class="code-fn">time.sleep</span>(<span class="code-num">2</span>)
+<span class="code-kw">for</span> i <span class="code-kw">in</span> <span class="code-fn">range</span>(<span class="code-num">1</span>, <span class="code-num">15</span>):
+    ble.<span class="code-fn">send_command</span>(CMD.MAP_SCAN, <span class="code-fn">f</span><span class="code-str">"{Kp}|{Ki}|{Kd}|25.0|{i}"</span>)
+    <span class="code-fn">time.sleep</span>(<span class="code-num">2</span>)</code></pre>
+                </div>
+            </div>
+
+            <p>Here is a picture of the arena with the different scan points highlighted. There are 5 spots in the area to record from.</p>
+
+            <img class="media-img" src="media/lab9/arena_map.png" alt="Arena map with scan points highlighted">
+
+            <p>Before mapping, I wanted to see the error I would get during orientation PID, and how much the robot drifts during a scanning session. Here is a plot of DMP yaw angles during a scanning run. As you can see in the plot, the recorded DMP angles stayed pretty close to the desired angles. The error did build up as the run time became longer, with the average angular error ~7 degrees. I would still expect pretty good results because the robot was able to stay close to desired angles.</p>
+
+            <img class="media-img" src="media/lab9/yaw_vs_time.png" alt="DMP yaw angles vs time during a scanning run" style="max-width:100%;max-height:720px;">
+
+            <p>I also conducted a drift test to see how much the robot drifts from the starting position. As you can see in the video, the robot does a good job of staying in the same position. It does overshoot and go past 350/−10 degrees, which is the desired end position.</p>
+
+            <div class="video-embed">
+                <iframe src="https://www.youtube.com/embed/fecfdOs578I?si=Kggmo53YluLq07vR" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+            </div>
+
+            <p>I spent time tuning my PID controller to get the best results. I had to decrease the min speed for orientation PID, as well as tune the process variables to ensure I accurately turned to target angles. For each spot in the arena, I recorded three times. I did this because during some recording runs, the orientation PID would stall, not record for some angles, and overshoot. After I finished recording, I was left with 15 CSVs, 3 CSVs for each spot.</p>
+
+            <hr class="task-divider">
+
+            <h3>Transformation Matrices</h3>
+            <p>Before plotting the data, I had to use two transformation matrices to adjust for the ToF sensor to robot frame and the robot to world frame. The ToF sensor was located ~85mm in the positive x direction from the center of the robot.</p>
+
+            <img class="media-img" src="media/lab9/trans_matrices.png" alt="Transformation matrices from sensor to robot frame and robot to world frame">
+
+            <hr class="task-divider">
+
+            <h3>Individual Scans</h3>
+            <p>With the transformation matrices, I can finally plot the data. Below are the polar scans from each of the five positions in the arena.</p>
+
+            <div class="img-row">
+                <img class="media-img" src="media/lab9/scan_0_0.png" alt="Scan at (0, 0)">
+                <img class="media-img" src="media/lab9/scan_0_3.png" alt="Scan at (0, 3)">
+            </div>
+            <div class="img-row">
+                <img class="media-img" src="media/lab9/scan_5_3.png" alt="Scan at (5, 3)">
+                <img class="media-img" src="media/lab9/scan_5_-3.png" alt="Scan at (5, -3)">
+            </div>
+            <img class="media-img" src="media/lab9/scan_-3_-2.png" alt="Scan at (-3, -2)">
+
+            <p>As we can see in the plots, there is a lot of variation. This is due to several factors. The robot does not perfectly turn 25 degrees — the orientation PID is not perfect, and neither is the DMP.</p>
+
+            <hr class="task-divider">
+
+            <h3>Combined Map</h3>
+            <p>Here is a combined map of all the scans. As expected, there is quite a bit of noise from the accumulated orientation error and ToF variation across runs.</p>
+
+            <img class="media-img" src="media/lab9/map_combined.png" alt="Combined map of all scans (raw)">
+
+            <hr class="task-divider">
+
+            <h3>Filtering &amp; Cleanup</h3>
+            <p>I wanted to try to clean up the generated map of the arena. I looked through points in the CSVs, and noticed that sometimes out of the three CSVs per scan spot, two of them would have similar data for an angle, but the third would be completely different due to noise. I filtered out readings for a certain angle if it was past a certain threshold from the median of the three readings. For example, at the origin, I got the following readings for the 25° angle:</p>
+
+            <div class="callout">
+                <p>655.000, 2253.000, 2323.000</p>
+                <p>655 is much lower than the other two, so it gets filtered out. This way, noisy outliers are removed without discarding good data.</p>
+            </div>
+
+            <p>This filtering helped a lot. Here is the cleaned result:</p>
+
+            <img class="media-img" src="media/lab9/map_combined_cleaned.png" alt="Combined map after outlier filtering">
+
+            <p>The shape of the room is much clearer. Next, I drew lines to estimate the walls, staying close to what the robot estimated while correcting obvious outliers. Here is the result:</p>
+
+            <img class="media-img" src="media/lab9/map_with_walls.png" alt="Map with estimated walls drawn">
+
+            <hr class="task-divider">
+
+            <h3>Wall Coordinates</h3>
+            <p>The estimated wall segments, saved as start and end coordinate pairs (in feet):</p>
+
+            <div class="gist">
+                <div class="gist-header">
+                    <span class="file-name">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5h16M4 12h16M4 18.5h16"/></svg>
+                        Wall Coordinates
+                    </span>
+                    <span class="lang-tag">Python</span>
+                </div>
+                <div class="gist-body">
+                    <pre><code class="code-block">wall_starts = [(<span class="code-num">-2.3</span>,<span class="code-num">0.4</span>),(<span class="code-num">-5.8</span>,<span class="code-num">0.4</span>),(<span class="code-num">-5.8</span>,<span class="code-num">-4.7</span>),(<span class="code-num">-0.8</span>,<span class="code-num">-4.7</span>),(<span class="code-num">-0.8</span>,<span class="code-num">-2.6</span>),(<span class="code-num">0.7</span>,<span class="code-num">-2.6</span>),(<span class="code-num">0.7</span>,<span class="code-num">-4.4</span>),
+               (<span class="code-num">6.4</span>,<span class="code-num">-4.4</span>),(<span class="code-num">6.4</span>,<span class="code-num">4.0</span>),(<span class="code-num">-2.2</span>,<span class="code-num">4.2</span>),(<span class="code-num">2.2</span>,<span class="code-num">1.8</span>),(<span class="code-num">2.1</span>,<span class="code-num">-1.2</span>),(<span class="code-num">5.1</span>,<span class="code-num">-1.2</span>),(<span class="code-num">5.0</span>,<span class="code-num">1.7</span>)]
+
+wall_ends   = [(<span class="code-num">-5.8</span>,<span class="code-num">0.4</span>),(<span class="code-num">-5.8</span>,<span class="code-num">-4.7</span>),(<span class="code-num">-0.8</span>,<span class="code-num">-4.7</span>),(<span class="code-num">-0.8</span>,<span class="code-num">-2.6</span>),(<span class="code-num">0.7</span>,<span class="code-num">-2.6</span>),(<span class="code-num">0.7</span>,<span class="code-num">-4.4</span>),(<span class="code-num">6.4</span>,<span class="code-num">-4.4</span>),
+               (<span class="code-num">6.4</span>,<span class="code-num">4.0</span>),(<span class="code-num">-2.2</span>,<span class="code-num">4.2</span>),(<span class="code-num">-2.3</span>,<span class="code-num">0.4</span>),(<span class="code-num">2.1</span>,<span class="code-num">-1.2</span>),(<span class="code-num">5.1</span>,<span class="code-num">-1.2</span>),(<span class="code-num">5.0</span>,<span class="code-num">1.7</span>),(<span class="code-num">2.2</span>,<span class="code-num">1.8</span>)]</code></pre>
+                </div>
+            </div>
+        </section>
+
+        <hr class="section-divider">
+
+        <!-- ── Collaboration ──────────────────────────────────────────────── -->
+        <section id="collaboration">
+            <h2>Collaboration</h2>
+            <p>I referenced <a class="student-link" href="https://correial.github.io/LuccaFastRobots/" target="_blank" rel="noopener noreferrer">Lucca's lab page</a> for help with planning out how to carry out a scanning session. This lab took a lot of debugging, and I talked to Claude to brainstorm why the PID controller was overshooting and how I could tune my variables to improve performance. I also heavily relied on Claude for plotting the data, and it helped me do the filtering step where I cleaned my maps up. I also used Claude to style the website.</p>
+        </section>
+    </main>
+</body>
+</html>
