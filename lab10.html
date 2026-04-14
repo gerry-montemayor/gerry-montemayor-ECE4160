@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Lab 10: Localization (Simulation)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        :root {
+            --bg-color: #10151b;
+            --text-color: #e6d8c0;
+            --card-bg: #161c24;
+            --card-border: #1f262f;
+            --card-outline: #26303a;
+            --muted: rgba(230, 216, 192, 0.8);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 1.05rem;
+            line-height: 1.8;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        nav {
+            width: fit-content;
+            max-width: 720px;
+            margin: 28px auto 48px;
+            padding: 12px 18px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            outline: 1px solid var(--card-outline);
+            border-radius: 14px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+        }
+
+        nav a {
+            color: var(--text-color);
+            text-decoration: none;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 12px;
+            border-radius: 10px;
+            transition: background-color 0.2s ease, transform 0.2s ease;
+        }
+
+        nav a:hover {
+            background-color: rgba(230, 216, 192, 0.12);
+            transform: translateY(-1px);
+        }
+
+        nav svg {
+            width: 28px;
+            height: 28px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 1.6;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        main {
+            width: 100%;
+            max-width: 1000px;
+            padding: 0 24px 96px;
+            display: grid;
+            gap: 36px;
+        }
+
+        header h1 {
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            color: #9ae6c4;
+        }
+
+        header p {
+            color: var(--muted);
+        }
+
+        section {
+            background: transparent;
+            border: none;
+            outline: none;
+            border-radius: 0;
+            padding: 0;
+            box-shadow: none;
+        }
+
+        h2 {
+            font-size: 1.75rem;
+            margin: 0 0 14px;
+            color: #9ae6c4;
+        }
+
+        h3 {
+            font-size: 1.3rem;
+            margin: 0 0 12px;
+            color: #9ae6c4;
+        }
+
+        p {
+            margin: 0 0 14px;
+        }
+
+        ul {
+            margin: 12px 0 14px 20px;
+            color: var(--muted);
+        }
+
+        ul li {
+            margin-bottom: 6px;
+        }
+
+        .subdued {
+            color: var(--muted);
+        }
+
+        a.student-link {
+            color: #8de4b2;
+            text-decoration: none;
+            border-bottom: 1px solid rgba(141, 228, 178, 0.4);
+            transition: color 0.2s ease, border-color 0.2s ease;
+        }
+
+        a.student-link:hover {
+            color: #a6f0c7;
+            border-color: rgba(166, 240, 199, 0.7);
+        }
+
+        a.student-link:visited {
+            color: #8de4b2;
+            border-color: rgba(141, 228, 178, 0.4);
+        }
+
+        .gist {
+            margin: 16px 0;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid #1f2630;
+            background: linear-gradient(180deg, #131c28 0%, #101722 100%);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 10px 22px rgba(0, 0, 0, 0.35);
+        }
+
+        .gist-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 12px;
+            background: #0f1620;
+            border-bottom: 1px solid #1f2630;
+            color: rgba(230, 216, 192, 0.9);
+            font-size: 1rem;
+        }
+
+        .gist-header .file-name {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .gist-header svg {
+            width: 18px;
+            height: 18px;
+            stroke: currentColor;
+            fill: none;
+        }
+
+        .lang-tag {
+            background: #1f2a36;
+            color: #cdd7e1;
+            border: 1px solid #2d3744;
+            padding: 2px 8px;
+            border-radius: 999px;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .gist-body {
+            padding: 14px;
+            background: #0f1722;
+        }
+
+        pre {
+            margin: 0;
+            padding: 0;
+            overflow-x: auto;
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+            font-size: 0.98rem;
+            line-height: 1.6;
+            color: #e9edf5;
+        }
+
+        code {
+            background: transparent;
+        }
+
+        .code-block {
+            display: block;
+            white-space: pre;
+        }
+
+        .code-inline {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 6px;
+            background: #0f1722;
+            border: 1px solid #1f2630;
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+            font-size: 0.95rem;
+            color: #e03a4f;
+            line-height: 1.3;
+        }
+
+        .code-kw     { color: #8ad1ff; }
+        .code-fn     { color: #a3d9a5; }
+        .code-str    { color: #ffd48a; }
+        .code-num    { color: #f3a5ff; }
+        .code-comment{ color: #8da0b3; }
+        .code-op     { color: #c4b5ff; }
+        .code-type   { color: #8ad1ff; }
+        .code-pp     { color: #e0a0ff; }
+
+        .media-img {
+            display: block;
+            max-width: 760px;
+            max-height: 520px;
+            width: auto;
+            height: auto;
+            margin: 10px auto 16px;
+            border-radius: 10px;
+            border: 1px solid #2d3642;
+            background: #0f1722;
+            padding: 6px;
+        }
+
+        .video-embed {
+            position: relative;
+            width: 100%;
+            max-width: 860px;
+            aspect-ratio: 16 / 9;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #2d3642;
+            background: #0f1722;
+            margin: 12px auto 20px;
+        }
+
+        .video-embed iframe,
+        .video-embed video {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+            object-fit: contain;
+        }
+
+        .section-divider {
+            border: 0;
+            height: 1px;
+            background: #2e3641;
+            margin: 8px 0 28px;
+        }
+
+        .task-divider {
+            border: 0;
+            height: 1px;
+            background: none;
+            border-top: 1px dashed #3b4552;
+            margin: 28px 0;
+        }
+
+        .callout {
+            border-left: 4px solid #9ae6c4;
+            padding: 10px 14px;
+            background: #0f1623;
+            border-radius: 10px;
+            color: var(--muted);
+            margin: 10px 0 16px;
+        }
+
+        .callout p:last-child {
+            margin-bottom: 0;
+        }
+
+        .kv-list {
+            list-style: none;
+            margin: 0 0 14px;
+            padding: 0;
+        }
+
+        .kv-list li {
+            padding: 4px 0;
+            color: var(--muted);
+        }
+
+        .kv-list li strong {
+            color: var(--text-color);
+        }
+
+        .img-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+            margin: 10px 0 16px;
+        }
+
+        .img-row .media-img {
+            margin: 0;
+            flex: 1 1 340px;
+            max-width: 460px;
+        }
+
+        @media (max-width: 640px) {
+            nav {
+                flex-wrap: wrap;
+            }
+            header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="index.html">
+            <svg aria-hidden="true" viewBox="0 0 24 24">
+                <path d="M4 10.75 12 4l8 6.75"/>
+                <path d="M5.5 11.75V20h4.5v-4.75h4V20h4.5v-8.25"/>
+            </svg>
+            <span>Home</span>
+        </a>
+        <a href="labs.html">
+            <svg aria-hidden="true" viewBox="0 0 24 24">
+                <path d="M4.5 6.5h5l1.5 2H19a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1h-14a1 1 0 0 1-1-1v-9a1 1 0 0 1 1-1Z"/>
+            </svg>
+            <span>Labs</span>
+        </a>
+    </nav>
+
+    <main>
+        <header>
+            <h1>Lab 10: Localization (Simulation)</h1>
+            <p>Goal: Implement grid localization using a Bayes Filter.</p>
+        </header>
+
+        <!-- ── Prelab ─────────────────────────────────────────────────────── -->
+        <section id="prelab">
+            <h2>Prelab</h2>
+            <p>First, I set up the simulation environment in the prelab following <a class="student-link" href="https://fastrobotscornell.github.io/FastRobots-2026/FastRobots-Sim.html" target="_blank" rel="noopener noreferrer">these directions</a>.</p>
+
+            <hr class="task-divider">
+
+            <h3>Task 1: Square</h3>
+            <p>Using the commander <span class="code-inline">set_vel()</span> and <span class="code-inline">time.sleep()</span> functions, I move the robot in a square. Below is a sample run.</p>
+
+            <div class="video-embed">
+                <iframe src="https://www.youtube.com/embed/G76P65XzxEw?si=te4wyzGmz-iREmMc" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+            </div>
+
+            <p>Here are two separate runs that compare the ground truth and the odometry of the robot. We can see that they vary greatly.</p>
+
+            <div class="img-row">
+                <img class="media-img" src="media/lab10/square_1.png" alt="Square run 1: ground truth vs odometry">
+                <img class="media-img" src="media/lab10/square_2.png" alt="Square run 2: ground truth vs odometry">
+            </div>
+
+            <p>I set the duration of a velocity command to be 0.7 seconds. The ground truth is the same for every run, but odometry changes a lot. This is the motivation of the lab!</p>
+
+            <hr class="task-divider">
+
+            <h3>Task 2: Closed Loop Control</h3>
+            <p>For this task, the robot drives forward until it is close to a wall, keeps rotating until it detects above a certain distance, drives forward, and repeats. I set the robot to turn for 0.7 seconds and its linear speed to 0.5 m/s so it does not move too fast. Here is a sample run.</p>
+
+            <div class="video-embed">
+                <iframe src="https://www.youtube.com/embed/EgcH30mY2ig?si=Bydl0RNCIM8XGz6S" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+            </div>
+
+            <p>To improve this closed loop control, I could set the distance threshold to stop and turn to be greater, which would prevent getting too close to the wall.</p>
+        </section>
+
+        <hr class="section-divider">
+
+        <!-- ── Localization ───────────────────────────────────────────────── -->
+        <section id="localization">
+            <h2>Localization</h2>
+            <p>Localization is the process of determining where the robot is with respect to the environment. Odometry estimates the robot's position by tracking how much it has moved — but as we saw in the prelab, it is very unreliable.</p>
+            <p>For this lab, the robot state is 3-dimensional: (x, y, θ). We create a grid over the following continuous space:</p>
+
+            <div class="callout">
+                <p>[-1.6764, +1.9812) meters &nbsp;/&nbsp; [-5.5, 6.5) feet &mdash; x direction</p>
+                <p>[-1.3716, +1.3716) meters &nbsp;/&nbsp; [-4.5, +4.5) feet &mdash; y direction</p>
+                <p>[-180, +180) degrees &mdash; θ axis</p>
+            </div>
+
+            <hr class="task-divider">
+
+            <h3>Sensor Model</h3>
+            <p>We use a Gaussian distribution to model sensor noise. This is a good fit for laser range finders like our ToF sensor.</p>
+
+            <hr class="task-divider">
+
+            <h3>Motion Model</h3>
+            <p>At every time step, odometry data is recorded and described by three parameters:</p>
+            <ul>
+                <li><strong>rotation1</strong> — rotate in place to face the direction of travel</li>
+                <li><strong>translation</strong> — drive straight to reach the new position</li>
+                <li><strong>rotation2</strong> — rotate in place to face the final heading</li>
+            </ul>
+
+            <hr class="task-divider">
+
+            <h3>Bayes Filter Algorithm</h3>
+            <p>Every iteration of the Bayes Filter has two steps: a <strong>prediction step</strong> that incorporates input data (increasing uncertainty in belief), and an <strong>update step</strong> that incorporates sensor observations (reducing uncertainty).</p>
+        </section>
+
+        <hr class="section-divider">
+
+        <!-- ── Trajectory ─────────────────────────────────────────────────── -->
+        <section id="trajectory">
+            <h2>Trajectory</h2>
+            <p>Here is the sample trajectory run provided. As we can see, the odometry vs the ground truth was not great at all.</p>
+
+            <div class="video-embed">
+                <iframe src="https://www.youtube.com/embed/lXre4UuPaUM?si=2NT-r77HpXiaZNQC" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+            </div>
+        </section>
+
+        <hr class="section-divider">
+
+        <!-- ── Implementation ─────────────────────────────────────────────── -->
+        <section id="implementation">
+            <h2>Implementation</h2>
+
+            <hr class="task-divider">
+
+            <h3>compute_control()</h3>
+            <p>Decomposes the change between two odometry poses into the three motion model parameters: rotation1, translation, and rotation2.</p>
+
+            <div class="gist">
+                <div class="gist-header">
+                    <span class="file-name">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5h16M4 12h16M4 18.5h16"/></svg>
+                        compute_control()
+                    </span>
+                    <span class="lang-tag">Python</span>
+                </div>
+                <div class="gist-body">
+                    <pre><code class="code-block"><span class="code-kw">def</span> <span class="code-fn">compute_control</span>(cur_pose, prev_pose):
+    <span class="code-comment">""" Given the current and previous odometry poses, this function extracts
+    the control information based on the odometry motion model.
+
+    Args:
+        cur_pose  ([Pose]): Current Pose
+        prev_pose ([Pose]): Previous Pose
+
+    Returns:
+        [delta_rot_1]: Rotation 1  (degrees)
+        [delta_trans]: Translation (meters)
+        [delta_rot_2]: Rotation 2  (degrees)
+    """</span>
+    dx = cur_pose[<span class="code-num">0</span>] - prev_pose[<span class="code-num">0</span>]
+    dy = cur_pose[<span class="code-num">1</span>] - prev_pose[<span class="code-num">1</span>]
+
+    delta_rot_1 = np.<span class="code-fn">degrees</span>(np.<span class="code-fn">arctan2</span>(dy, dx)) - prev_pose[<span class="code-num">2</span>]
+    delta_rot_2 = cur_pose[<span class="code-num">2</span>] - prev_pose[<span class="code-num">2</span>] - delta_rot_1
+    delta_trans = np.<span class="code-fn">sqrt</span>(dx**<span class="code-num">2</span> + dy**<span class="code-num">2</span>)
+
+    delta_rot_1 = mapper.<span class="code-fn">normalize_angle</span>(delta_rot_1)
+    delta_rot_2 = mapper.<span class="code-fn">normalize_angle</span>(delta_rot_2)
+
+    <span class="code-kw">return</span> delta_rot_1, delta_trans, delta_rot_2</code></pre>
+                </div>
+            </div>
+
+            <hr class="task-divider">
+
+            <h3>odom_motion_model()</h3>
+            <p>Answers the question: "given that I executed control u, how likely is it that I end up at <span class="code-inline">cur_pose</span> if I started at <span class="code-inline">prev_pose</span>?" Returns the probability p(x'|x, u) by comparing the expected control to the actual control using Gaussian likelihoods.</p>
+
+            <div class="gist">
+                <div class="gist-header">
+                    <span class="file-name">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5h16M4 12h16M4 18.5h16"/></svg>
+                        odom_motion_model()
+                    </span>
+                    <span class="lang-tag">Python</span>
+                </div>
+                <div class="gist-body">
+                    <pre><code class="code-block"><span class="code-kw">def</span> <span class="code-fn">odom_motion_model</span>(cur_pose, prev_pose, u):
+    <span class="code-comment">""" Odometry Motion Model
+
+    Args:
+        cur_pose  ([Pose]): Current Pose
+        prev_pose ([Pose]): Previous Pose
+        (rot1, trans, rot2) (float, float, float): A tuple with control data in the
+                                                   format (rot1, trans, rot2) with
+                                                   units (degrees, meters, degrees)
+
+    Returns:
+        prob [float]: Probability p(x'|x, u)
+    """</span>
+    rot1, trans, rot2 = u
+    rot1_hat, trans_hat, rot2_hat = <span class="code-fn">compute_control</span>(cur_pose, prev_pose)
+
+    p_rot1  = loc.<span class="code-fn">gaussian</span>(mapper.<span class="code-fn">normalize_angle</span>(rot1_hat  - rot1),  <span class="code-num">0</span>, loc.odom_rot_sigma)
+    p_trans = loc.<span class="code-fn">gaussian</span>(trans_hat - trans, <span class="code-num">0</span>, loc.odom_trans_sigma)
+    p_rot2  = loc.<span class="code-fn">gaussian</span>(mapper.<span class="code-fn">normalize_angle</span>(rot2_hat  - rot2),  <span class="code-num">0</span>, loc.odom_rot_sigma)
+
+    <span class="code-kw">return</span> p_rot1 * p_trans * p_rot2</code></pre>
+                </div>
+            </div>
+
+            <hr class="task-divider">
+
+            <h3>prediction_step()</h3>
+            <p>Implements the prediction step of the Bayes Filter. For every possible cell the robot could be in, contributions from all previous cells are summed, weighted by how likely each transition was. Cells with negligible belief (&lt; 0.0001) are skipped for efficiency. The result is renormalized to maintain a valid probability distribution.</p>
+
+            <div class="gist">
+                <div class="gist-header">
+                    <span class="file-name">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5h16M4 12h16M4 18.5h16"/></svg>
+                        prediction_step()
+                    </span>
+                    <span class="lang-tag">Python</span>
+                </div>
+                <div class="gist-body">
+                    <pre><code class="code-block"><span class="code-kw">def</span> <span class="code-fn">prediction_step</span>(cur_odom, prev_odom):
+    <span class="code-comment">""" Prediction step of the Bayes Filter.
+    Update the probabilities in loc.bel_bar based on loc.bel from the
+    previous time step and the odometry motion model.
+
+    Args:
+        cur_odom  ([Pose]): Current Pose
+        prev_odom ([Pose]): Previous Pose
+    """</span>
+    u = <span class="code-fn">compute_control</span>(cur_odom, prev_odom)
+    loc.bel_bar = np.<span class="code-fn">zeros_like</span>(loc.bel_bar)
+
+    <span class="code-kw">for</span> prev_x <span class="code-kw">in</span> <span class="code-fn">range</span>(mapper.MAX_CELLS_X):
+        <span class="code-kw">for</span> prev_y <span class="code-kw">in</span> <span class="code-fn">range</span>(mapper.MAX_CELLS_Y):
+            <span class="code-kw">for</span> prev_a <span class="code-kw">in</span> <span class="code-fn">range</span>(mapper.MAX_CELLS_A):
+                <span class="code-kw">if</span> loc.bel[prev_x, prev_y, prev_a] &lt; <span class="code-num">0.0001</span>:
+                    <span class="code-kw">continue</span>
+                <span class="code-kw">for</span> cur_x <span class="code-kw">in</span> <span class="code-fn">range</span>(mapper.MAX_CELLS_X):
+                    <span class="code-kw">for</span> cur_y <span class="code-kw">in</span> <span class="code-fn">range</span>(mapper.MAX_CELLS_Y):
+                        <span class="code-kw">for</span> cur_a <span class="code-kw">in</span> <span class="code-fn">range</span>(mapper.MAX_CELLS_A):
+                            cur_pose  = mapper.<span class="code-fn">from_map</span>(cur_x,  cur_y,  cur_a)
+                            prev_pose = mapper.<span class="code-fn">from_map</span>(prev_x, prev_y, prev_a)
+                            loc.bel_bar[cur_x, cur_y, cur_a] += \
+                                <span class="code-fn">odom_motion_model</span>(cur_pose, prev_pose, u) * loc.bel[prev_x, prev_y, prev_a]
+
+    loc.bel_bar /= np.<span class="code-fn">sum</span>(loc.bel_bar)</code></pre>
+                </div>
+            </div>
+
+            <hr class="task-divider">
+
+            <h3>sensor_model()</h3>
+            <p>Returns the likelihood of a set of sensor readings given a specific pose. For each of the 18 observations per cell, it computes a Gaussian probability comparing the actual observation to the expected observation for that pose.</p>
+
+            <div class="gist">
+                <div class="gist-header">
+                    <span class="file-name">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5h16M4 12h16M4 18.5h16"/></svg>
+                        sensor_model()
+                    </span>
+                    <span class="lang-tag">Python</span>
+                </div>
+                <div class="gist-body">
+                    <pre><code class="code-block"><span class="code-kw">def</span> <span class="code-fn">sensor_model</span>(obs):
+    <span class="code-comment">""" This is the equivalent of p(z|x).
+
+    Args:
+        obs ([ndarray]): A 1D array consisting of the true observations for a
+                         specific robot pose in the map
+
+    Returns:
+        [ndarray]: Returns a 1D array of size 18 (=loc.OBS_PER_CELL) with the
+                   likelihoods of each individual sensor measurement
+    """</span>
+    prob_array = np.<span class="code-fn">zeros</span>(mapper.OBS_PER_CELL)
+    obs_data   = loc.obs_range_data.<span class="code-fn">flatten</span>()
+    <span class="code-kw">for</span> i <span class="code-kw">in</span> <span class="code-fn">range</span>(mapper.OBS_PER_CELL):
+        prob_array[i] = loc.<span class="code-fn">gaussian</span>(obs_data[i], obs[i], loc.sensor_sigma)
+    <span class="code-kw">return</span> prob_array</code></pre>
+                </div>
+            </div>
+
+            <hr class="task-divider">
+
+            <h3>update_step()</h3>
+            <p>Updates the belief by multiplying the predicted belief at each cell by the product of sensor likelihoods for that cell, then renormalizing.</p>
+
+            <div class="gist">
+                <div class="gist-header">
+                    <span class="file-name">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5h16M4 12h16M4 18.5h16"/></svg>
+                        update_step()
+                    </span>
+                    <span class="lang-tag">Python</span>
+                </div>
+                <div class="gist-body">
+                    <pre><code class="code-block"><span class="code-kw">def</span> <span class="code-fn">update_step</span>():
+    <span class="code-comment">""" Update step of the Bayes Filter.
+    Update the probabilities in loc.bel based on loc.bel_bar and the sensor model.
+    """</span>
+    <span class="code-kw">for</span> x <span class="code-kw">in</span> <span class="code-fn">range</span>(mapper.MAX_CELLS_X):
+        <span class="code-kw">for</span> y <span class="code-kw">in</span> <span class="code-fn">range</span>(mapper.MAX_CELLS_Y):
+            <span class="code-kw">for</span> a <span class="code-kw">in</span> <span class="code-fn">range</span>(mapper.MAX_CELLS_A):
+                loc.bel[x, y, a] = np.<span class="code-fn">prod</span>(<span class="code-fn">sensor_model</span>(mapper.<span class="code-fn">get_views</span>(x, y, a))) * loc.bel_bar[x, y, a]
+    loc.bel /= np.<span class="code-fn">sum</span>(loc.bel)</code></pre>
+                </div>
+            </div>
+        </section>
+
+        <hr class="section-divider">
+
+        <!-- ── Running the Bayes Filter ───────────────────────────────────── -->
+        <section id="results">
+            <h2>Running the Bayes Filter</h2>
+            <p>After finishing the implementation, I ran the same trajectory as before, this time using the Bayes Filter to track the belief. Here is a video of the run.</p>
+
+            <div class="video-embed">
+                <iframe src="https://www.youtube.com/embed/Ckw-_ZzBoLg?si=s9Ad73pUCVExH74L" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+            </div>
+
+            <p>Here is an image of the final position.</p>
+
+            <img class="media-img" src="media/lab10/final_bayes_run.png" alt="Final Bayes Filter run — belief vs ground truth">
+
+            <p>As we can see, the Bayes Filter does a good job of maintaining a belief that is close to the ground truth. It performs better when the robot is closer to walls, since sensor readings near obstacles are more reliable.</p>
+        </section>
+
+        <hr class="section-divider">
+
+        <!-- ── Collaboration ──────────────────────────────────────────────── -->
+        <section id="collaboration">
+            <h2>Collaboration</h2>
+            <p>For this lab, I referenced <a class="student-link" href="https://correial.github.io/LuccaFastRobots/" target="_blank" rel="noopener noreferrer">Lucca's webpage</a> for implementation guidance. During class, I got help with setting up the simulation environment, and consulted Claude with questions about optimizing the prediction and update steps with better Python. I also used Claude to style the website.</p>
+        </section>
+    </main>
+</body>
+</html>
