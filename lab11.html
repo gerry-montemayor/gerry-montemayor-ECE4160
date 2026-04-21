@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Lab 11: Localization (Physical Robot)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        :root {
+            --bg-color: #10151b;
+            --text-color: #e6d8c0;
+            --card-bg: #161c24;
+            --card-border: #1f262f;
+            --card-outline: #26303a;
+            --muted: rgba(230, 216, 192, 0.8);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 1.05rem;
+            line-height: 1.8;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        nav {
+            width: fit-content;
+            max-width: 720px;
+            margin: 28px auto 48px;
+            padding: 12px 18px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            outline: 1px solid var(--card-outline);
+            border-radius: 14px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+        }
+
+        nav a {
+            color: var(--text-color);
+            text-decoration: none;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 12px;
+            border-radius: 10px;
+            transition: background-color 0.2s ease, transform 0.2s ease;
+        }
+
+        nav a:hover {
+            background-color: rgba(230, 216, 192, 0.12);
+            transform: translateY(-1px);
+        }
+
+        nav svg {
+            width: 28px;
+            height: 28px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 1.6;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        main {
+            width: 100%;
+            max-width: 1000px;
+            padding: 0 24px 96px;
+            display: grid;
+            gap: 36px;
+        }
+
+        header h1 {
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            color: #9ae6c4;
+        }
+
+        header p {
+            color: var(--muted);
+        }
+
+        section {
+            background: transparent;
+            border: none;
+            outline: none;
+            border-radius: 0;
+            padding: 0;
+            box-shadow: none;
+        }
+
+        h2 {
+            font-size: 1.75rem;
+            margin: 0 0 14px;
+            color: #9ae6c4;
+        }
+
+        h3 {
+            font-size: 1.3rem;
+            margin: 0 0 12px;
+            color: #9ae6c4;
+        }
+
+        p {
+            margin: 0 0 14px;
+        }
+
+        ul {
+            margin: 12px 0 14px 20px;
+            color: var(--muted);
+        }
+
+        ul li {
+            margin-bottom: 6px;
+        }
+
+        .subdued {
+            color: var(--muted);
+        }
+
+        a.student-link {
+            color: #8de4b2;
+            text-decoration: none;
+            border-bottom: 1px solid rgba(141, 228, 178, 0.4);
+            transition: color 0.2s ease, border-color 0.2s ease;
+        }
+
+        a.student-link:hover {
+            color: #a6f0c7;
+            border-color: rgba(166, 240, 199, 0.7);
+        }
+
+        a.student-link:visited {
+            color: #8de4b2;
+            border-color: rgba(141, 228, 178, 0.4);
+        }
+
+        .gist {
+            margin: 16px 0;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid #1f2630;
+            background: linear-gradient(180deg, #131c28 0%, #101722 100%);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 10px 22px rgba(0, 0, 0, 0.35);
+        }
+
+        .gist-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 12px;
+            background: #0f1620;
+            border-bottom: 1px solid #1f2630;
+            color: rgba(230, 216, 192, 0.9);
+            font-size: 1rem;
+        }
+
+        .gist-header .file-name {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .gist-header svg {
+            width: 18px;
+            height: 18px;
+            stroke: currentColor;
+            fill: none;
+        }
+
+        .lang-tag {
+            background: #1f2a36;
+            color: #cdd7e1;
+            border: 1px solid #2d3744;
+            padding: 2px 8px;
+            border-radius: 999px;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .gist-body {
+            padding: 14px;
+            background: #0f1722;
+        }
+
+        pre {
+            margin: 0;
+            padding: 0;
+            overflow-x: auto;
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+            font-size: 0.98rem;
+            line-height: 1.6;
+            color: #e9edf5;
+        }
+
+        code {
+            background: transparent;
+        }
+
+        .code-block {
+            display: block;
+            white-space: pre;
+        }
+
+        .code-inline {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 6px;
+            background: #0f1722;
+            border: 1px solid #1f2630;
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+            font-size: 0.95rem;
+            color: #e03a4f;
+            line-height: 1.3;
+        }
+
+        .code-kw     { color: #8ad1ff; }
+        .code-fn     { color: #a3d9a5; }
+        .code-str    { color: #ffd48a; }
+        .code-num    { color: #f3a5ff; }
+        .code-comment{ color: #8da0b3; }
+        .code-op     { color: #c4b5ff; }
+        .code-type   { color: #8ad1ff; }
+        .code-pp     { color: #e0a0ff; }
+
+        .media-img {
+            display: block;
+            max-width: 760px;
+            max-height: 520px;
+            width: auto;
+            height: auto;
+            margin: 10px auto 16px;
+            border-radius: 10px;
+            border: 1px solid #2d3642;
+            background: #0f1722;
+            padding: 6px;
+        }
+
+        .video-embed {
+            position: relative;
+            width: 100%;
+            max-width: 860px;
+            aspect-ratio: 16 / 9;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #2d3642;
+            background: #0f1722;
+            margin: 12px auto 20px;
+        }
+
+        .video-embed iframe,
+        .video-embed video {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+            object-fit: contain;
+        }
+
+        .section-divider {
+            border: 0;
+            height: 1px;
+            background: #2e3641;
+            margin: 8px 0 28px;
+        }
+
+        .task-divider {
+            border: 0;
+            height: 1px;
+            background: none;
+            border-top: 1px dashed #3b4552;
+            margin: 28px 0;
+        }
+
+        .callout {
+            border-left: 4px solid #9ae6c4;
+            padding: 10px 14px;
+            background: #0f1623;
+            border-radius: 10px;
+            color: var(--muted);
+            margin: 10px 0 16px;
+        }
+
+        .callout p:last-child {
+            margin-bottom: 0;
+        }
+
+        .kv-list {
+            list-style: none;
+            margin: 0 0 14px;
+            padding: 0;
+        }
+
+        .kv-list li {
+            padding: 4px 0;
+            color: var(--muted);
+        }
+
+        .kv-list li strong {
+            color: var(--text-color);
+        }
+
+        .img-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+            margin: 10px 0 16px;
+        }
+
+        .img-row .media-img {
+            margin: 0;
+            flex: 1 1 340px;
+            max-width: 460px;
+        }
+
+        @media (max-width: 640px) {
+            nav {
+                flex-wrap: wrap;
+            }
+            header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="index.html">
+            <svg aria-hidden="true" viewBox="0 0 24 24">
+                <path d="M4 10.75 12 4l8 6.75"/>
+                <path d="M5.5 11.75V20h4.5v-4.75h4V20h4.5v-8.25"/>
+            </svg>
+            <span>Home</span>
+        </a>
+        <a href="labs.html">
+            <svg aria-hidden="true" viewBox="0 0 24 24">
+                <path d="M4.5 6.5h5l1.5 2H19a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1h-14a1 1 0 0 1-1-1v-9a1 1 0 0 1 1-1Z"/>
+            </svg>
+            <span>Labs</span>
+        </a>
+    </nav>
+
+    <main>
+        <header>
+            <h1>Lab 11: Localization on the Physical Robot</h1>
+            <p>Goal: In this lab, we will perform localization with a Bayes Filter on the actual robot, using 360 degree ToF scans.</p>
+        </header>
+
+        <!-- ── Setup ──────────────────────────────────────────────────────── -->
+        <section id="setup">
+            <h2>Setup Base Code</h2>
+            <p>First, I set up the necessary localization code into my project.</p>
+            <ul>
+                <li><strong>Lab11_sim.ipynb</strong> &rarr; <code style="color:#9ae6c4;background:none;">notebooks/</code> directory &mdash; Bayes Filter implementation for virtual robot</li>
+                <li><strong>Lab11_real.ipynb</strong> &rarr; <code style="color:#9ae6c4;background:none;">notebooks/</code> directory &mdash; Skeleton code to integrate localization with real robot</li>
+                <li><strong>Localization_extras.py</strong> &rarr; <code style="color:#9ae6c4;background:none;">FastRobots-sim-realease-main/</code> directory &mdash; Fully-functional localization in sim module</li>
+            </ul>
+        </section>
+
+        <hr class="section-divider">
+
+        <!-- ── Task 1 ──────────────────────────────────────────────────────── -->
+        <section id="task1">
+            <h2>Task 1: Test Localization in Simulation</h2>
+            <p>For this task, I needed to ensure the simulation notebook ran smoothly. Here is a screenshot showing that the notebook runs. As you can see, the odometry readings in red are way off, but the belief (blue) stays close to the ground truth (green), indicating that the Bayes Filter is running correctly.</p>
+
+            <img class="media-img" src="media/lab11/sim_test.png" alt="Simulation test — odometry vs belief vs ground truth">
+        </section>
+
+        <hr class="section-divider">
+
+        <!-- ── Task 2 ──────────────────────────────────────────────────────── -->
+        <section id="task2">
+            <h2>Task 2: Running the Update Step with ToF Data</h2>
+            <p>In this task, I will be running only the update step from sensor measurements to localize the robot at different marked positions in the space. The way this will work is that I will place the robot at a marked location, run the function <span class="code-inline">perform_observation_loop()</span>, then using the resulting <span class="code-inline">sensor_ranges</span> and <span class="code-inline">sensor_bearings</span>, determine how well the robot can localize where it is.</p>
+
+            <p>The robot will be spinning 360 degrees counterclockwise in 20 degree increments. Therefore, there will be a total of 18 measurements: 0, 20, &hellip;, 340. I wanted to make sure my robot could accurately do this, so I tested my orientation PID from previous labs.</p>
+
+            <p>I tuned my PID variables and lowered the max turn speed for the robot. Here are the variable values I used:</p>
+
+            <div class="callout">
+                <p>Kp = 0.18</p>
+                <p>Ki = 0.0</p>
+                <p>Kd = 0.02</p>
+                <p>const int minTurnSpeed = 180;</p>
+                <p>const int maxTurnSpeed = 200;</p>
+            </div>
+
+            <p>Then, I worked on implementing the <span class="code-inline">perform_observation_loop()</span>. This function was simple, I really only needed to incorporate code from my previous labs. This function will call my <span class="code-inline">MAP_SCAN</span> function from Lab 9, then gather data with the <span class="code-inline">SEND_SCAN_DATA</span> command. Here is the completed <span class="code-inline">perform_observation_loop()</span> code.</p>
+
+            <div class="gist">
+                <div class="gist-header">
+                    <span class="file-name">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5h16M4 12h16M4 18.5h16"/></svg>
+                        perform_observation_loop()
+                    </span>
+                    <span class="lang-tag">Python</span>
+                </div>
+                <div class="gist-body">
+                    <pre><code class="code-block"><span class="code-kw">async def</span> <span class="code-fn">perform_observation_loop</span>(self, rot_vel=<span class="code-num">120</span>):
+    Kp = <span class="code-num">0.18</span>
+    Ki = <span class="code-num">0.0</span>
+    Kd = <span class="code-num">0.02</span>
+    self.ble.<span class="code-fn">send_command</span>(CMD.MAP_SCAN, <span class="code-str">f"{Kp}|{Ki}|{Kd}|0.0|{0}"</span>)
+    <span class="code-kw">await</span> asyncio.<span class="code-fn">sleep</span>(<span class="code-num">2</span>)
+    <span class="code-kw">for</span> i <span class="code-kw">in</span> <span class="code-fn">range</span>(<span class="code-num">1</span>, <span class="code-num">18</span>):
+        self.ble.<span class="code-fn">send_command</span>(CMD.MAP_SCAN, <span class="code-str">f"{Kp}|{Ki}|{Kd}|-20.0|{i}"</span>)
+        <span class="code-kw">await</span> asyncio.<span class="code-fn">sleep</span>(<span class="code-num">2.5</span>)
+
+    readings = []
+    <span class="code-kw">def</span> <span class="code-fn">scan_data_handler</span>(uuid, data):
+        s = self.ble.<span class="code-fn">bytearray_to_string</span>(data)
+        parts = s.<span class="code-fn">split</span>(<span class="code-str">","</span>)
+        <span class="code-kw">if</span> <span class="code-fn">len</span>(parts) == <span class="code-num">5</span>:
+            time_ms, angle, distance, yaw, error = parts
+            readings.<span class="code-fn">append</span>((<span class="code-fn">float</span>(angle), <span class="code-fn">float</span>(distance)))
+
+    self.ble.<span class="code-fn">start_notify</span>(self.ble.uuid[<span class="code-str">'RX_STRING'</span>], scan_data_handler)
+    self.ble.<span class="code-fn">send_command</span>(CMD.SEND_SCAN_DATA, <span class="code-str">""</span>)
+    <span class="code-kw">await</span> asyncio.<span class="code-fn">sleep</span>(<span class="code-num">3</span>)
+    self.ble.<span class="code-fn">stop_notify</span>(self.ble.uuid[<span class="code-str">'RX_STRING'</span>])
+
+    sensor_ranges   = np.<span class="code-fn">array</span>([d / <span class="code-num">1000.0</span> <span class="code-kw">for</span> _, d <span class="code-kw">in</span> readings])[np.newaxis].T
+    sensor_bearings = np.<span class="code-fn">array</span>([a <span class="code-kw">for</span> a, _ <span class="code-kw">in</span> readings])[np.newaxis].T
+
+    <span class="code-kw">return</span> sensor_ranges, sensor_bearings</code></pre>
+                </div>
+            </div>
+
+            <p>I also had to make changes to function definitions as described in the lab tips. This involved adding <span class="code-inline">async</span> and <span class="code-inline">await</span> to different function headers so I could wait for BLE commands to complete. After I finished implementing, I was able to run the update steps!</p>
+
+            <hr class="task-divider">
+
+            <h3>Results</h3>
+            <p>Here is a sample update step video at (5, 3):</p>
+
+            <div class="video-embed">
+                <iframe src="https://www.youtube.com/embed/miXn7b8wokI?si=PLWGXvRniqeJr103" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+            </div>
+
+            <p>Here are the results for each of the spots in the map. Belief is in blue, and ground truth in green!</p>
+
+            <h3>(-3, 2)</h3>
+            <img class="media-img" src="media/lab11/neg3_neg2.png" alt="Localization belief at (-3, 2)">
+
+            <h3>(0, 0)</h3>
+            <img class="media-img" src="media/lab11/0_0.png" alt="Localization belief at (0, 0)">
+
+            <h3>(0, 3)</h3>
+            <img class="media-img" src="media/lab11/0_3.png" alt="Localization belief at (0, 3)">
+
+            <h3>(5, -3)</h3>
+            <img class="media-img" src="media/lab11/5_neg3.png" alt="Localization belief at (5, -3)">
+
+            <h3>(5, 3)</h3>
+            <img class="media-img" src="media/lab11/5_3.png" alt="Localization belief at (5, 3)">
+
+            <p>You can see that for the different points, the calculated belief was pretty close to the ground truth. For the origin, the belief was actually exactly correct! Although the origin was the most accurate belief, I would say that positions closer to the wall and surrounded by close walls will be the best. The reason for this is sensor error, as farther walls will build up error and have a larger effect on the final belief.</p>
+
+            <p>I also want to mention that there is also noise from the orientation PID. As you can see in the video above, the robot doesn't exactly rotate by 20 degrees every single time. At the end, the robot has an orientation that is slightly past 0 degrees, when it should've ended at 340 degrees. I spent a lot of time tuning the different variables for Orientation PID, including the K and D values, the time between <span class="code-inline">MAP_SCAN</span> commands, increasing the deadband, and min/max turn speeds. The sensor model also overestimates how close it is to the wall. At points (5,3) and (5,-3), the distance from the wall is almost identical -- the model thinks its closer to the wall than it actually is. </p>
+        </section>
+
+        <hr class="section-divider">
+
+        <!-- ── Collaboration ──────────────────────────────────────────────── -->
+        <section id="collaboration">
+            <h2>Collaboration</h2>
+            <p>I referenced <a class="student-link" href="https://correial.github.io/LuccaFastRobots/" target="_blank" rel="noopener noreferrer">Lucca's page</a> for a general grasp on the perform observation loop function, but I mostly kept my own logic from previous labs. The lab directions were really clear, so I didn't reference Claude other than styling my website! Most of my time was spent tuning the orientation PID and re-running bad observation loops that messed up.</p>
+        </section>
+    </main>
+</body>
+</html>
