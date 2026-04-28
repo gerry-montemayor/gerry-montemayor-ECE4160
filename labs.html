@@ -71,7 +71,7 @@
         }
 
         main {
-            max-width: 900px;
+            max-width: 960px;
             margin: 0 auto;
             padding: 0 24px 80px;
         }
@@ -83,7 +83,8 @@
 
         .lab-list {
             display: grid;
-            gap: 18px;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
         }
 
         .lab-card {
@@ -91,14 +92,16 @@
             border: 1px solid var(--card-border);
             outline: 1px solid var(--card-outline);
             border-radius: 12px;
-            padding: 16px 18px;
+            overflow: hidden;
             transition: transform 0.15s ease, box-shadow 0.15s ease, outline-color 0.15s ease;
         }
 
         .lab-card a {
             color: var(--text-color);
             text-decoration: none;
-            display: block;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
         }
 
         .lab-card:hover {
@@ -107,15 +110,52 @@
             outline-color: rgba(230, 216, 192, 0.5);
         }
 
+        .lab-cover {
+            width: 100%;
+            aspect-ratio: 3 / 2;
+            background: #0d1117;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .lab-cover img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: block;
+        }
+
+        .lab-cover video {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: block;
+        }
+
+        .lab-card-content {
+            padding: 10px 14px 12px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
         .lab-title {
-            font-size: 1.2rem;
+            font-size: 1.15rem;
             font-weight: 600;
-            margin-bottom: 6px;
+            margin-bottom: 3px;
+            color: #7ecbcf;
         }
 
         .lab-summary {
-            font-size: 1rem;
+            font-size: 0.875rem;
             color: rgba(230, 216, 192, 0.85);
+        }
+
+        @media (max-width: 700px) {
+            .lab-list {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -141,68 +181,131 @@
         <div class="lab-list">
             <article class="lab-card">
                 <a href="lab1.html">
-                    <div class="lab-title">Lab 1: The Artemis Board and Bluetooth</div>
-                    <p class="lab-summary">Setup and configuration for connecting to board.</p>
+                    <div class="lab-cover">
+                        <img src="media/covers/lab1_cover.png" alt="Lab 1 cover">
+                    </div>
+                    <div class="lab-card-content">
+                        <div class="lab-title">Lab 1: The Artemis Board and Bluetooth</div>
+                        <p class="lab-summary">Setup and configuration for connecting to board.</p>
+                    </div>
                 </a>
             </article>
             <article class="lab-card">
                 <a href="lab2.html">
-                    <div class="lab-title">Lab 2: The IMU</div>
-                    <p class="lab-summary">Adding the IMU to the robot, running Artemis & sensors from a battery, and stunt recording.</p>
+                    <div class="lab-cover">
+                        <img src="media/covers/lab2_cover.png" alt="Lab 2 cover">
+                    </div>
+                    <div class="lab-card-content">
+                        <div class="lab-title">Lab 2: The IMU</div>
+                        <p class="lab-summary">Adding the IMU to the robot, running Artemis & sensors from a battery, and stunt recording.</p>
+                    </div>
                 </a>
             </article>
             <article class="lab-card">
                 <a href="lab3.html">
-                    <div class="lab-title">Lab 3: The Time of Flight Sensors</div>
-                    <p class="lab-summary">Adding two ToF sensors to the robot, collecting sensor data.</p>
+                    <div class="lab-cover">
+                        <img src="media/covers/lab3_cover.png" alt="Lab 3 cover">
+                    </div>
+                    <div class="lab-card-content">
+                        <div class="lab-title">Lab 3: The Time of Flight Sensors</div>
+                        <p class="lab-summary">Adding two ToF sensors to the robot, collecting sensor data.</p>
+                    </div>
                 </a>
             </article>
             <article class="lab-card">
                 <a href="lab4.html">
-                    <div class="lab-title">Lab 4: The Motors and Open Loop Control</div>
-                    <p class="lab-summary">Wiring dual motor drivers, generating PWM signals, and driving the car with pre-programmed open loop control.</p>
+                    <div class="lab-cover">
+                        <img src="media/covers/lab4_cover.png" alt="Lab 4 cover">
+                    </div>
+                    <div class="lab-card-content">
+                        <div class="lab-title">Lab 4: The Motors and Open Loop Control</div>
+                        <p class="lab-summary">Wiring dual motor drivers, generating PWM signals, and driving the car with pre-programmed open loop control.</p>
+                    </div>
                 </a>
             </article>
             <article class="lab-card">
                 <a href="lab5.html">
-                    <div class="lab-title">Lab 5: Linear PID Control and Linear Interpolation</div>
-                    <p class="lab-summary">Implement PID control of the robot and speed up data collection.</p>
+                    <div class="lab-cover">
+                        <video autoplay muted loop playsinline>
+                            <source src="media/covers/lab5_cover.MOV" type="video/mp4">
+                        </video>
+                    </div>
+                    <div class="lab-card-content">
+                        <div class="lab-title">Lab 5: Linear PID Control and Linear Interpolation</div>
+                        <p class="lab-summary">Implement PID control of the robot and speed up data collection.</p>
+                    </div>
                 </a>
             </article>
             <article class="lab-card">
                 <a href="lab6.html">
-                    <div class="lab-title">Lab 6: Orientation Control</div>
-                    <p class="lab-summary">Get experience with orientation PID using the IMU, controlling yaw of the robot.</p>
+                    <div class="lab-cover">
+                        <video autoplay muted loop playsinline>
+                            <source src="media/covers/lab6_cover.MOV" type="video/mp4">
+                        </video>
+                    </div>
+                    <div class="lab-card-content">
+                        <div class="lab-title">Lab 6: Orientation Control</div>
+                        <p class="lab-summary">Get experience with orientation PID using the IMU, controlling yaw of the robot.</p>
+                    </div>
                 </a>
             </article>
             <article class="lab-card">
                 <a href="lab7.html">
-                    <div class="lab-title">Lab 7: Kalman Filtering</div>
-                    <p class="lab-summary">Implement a Kalman Filter to supplement the slowly sampled ToF values to get to the wall faster.</p>
+                    <div class="lab-cover">
+                        <video autoplay muted loop playsinline>
+                            <source src="media/covers/lab7_cover.mov" type="video/mp4">
+                        </video>
+                    </div>
+                    <div class="lab-card-content">
+                        <div class="lab-title">Lab 7: Kalman Filtering</div>
+                        <p class="lab-summary">Implement a Kalman Filter to supplement the slowly sampled ToF values to get to the wall faster.</p>
+                    </div>
                 </a>
             </article>
             <article class="lab-card">
                 <a href="lab8.html">
-                    <div class="lab-title">Lab 8: Stunts!</div>
-                    <p class="lab-summary">Use everything up until now to perform a cool stunt.</p>
+                    <div class="lab-cover">
+                        <video autoplay muted loop playsinline>
+                            <source src="media/covers/lab8_cover.MOV" type="video/mp4">
+                        </video>
+                    </div>
+                    <div class="lab-card-content">
+                        <div class="lab-title">Lab 8: Stunts!</div>
+                        <p class="lab-summary">Use everything up until now to perform a cool stunt.</p>
+                    </div>
                 </a>
             </article>
             <article class="lab-card">
                 <a href="lab9.html">
-                    <div class="lab-title">Lab 9: Mapping</div>
-                    <p class="lab-summary">Map out a small room with the ToF sensor and orientation control.</p>
+                    <div class="lab-cover">
+                        <img src="media/covers/lab9_cover.jpeg" alt="Lab 9 cover">
+                    </div>
+                    <div class="lab-card-content">
+                        <div class="lab-title">Lab 9: Mapping</div>
+                        <p class="lab-summary">Map out a small room with the ToF sensor and orientation control.</p>
+                    </div>
                 </a>
             </article>
             <article class="lab-card">
                 <a href="lab10.html">
-                    <div class="lab-title">Lab 10: Localization in Simulation</div>
-                    <p class="lab-summary">Implement a Bayes Filter and observe it in a robot simulation environment.</p>
+                    <div class="lab-cover">
+                        <img src="media/covers/lab10_cover.png" alt="Lab 10 cover">
+                    </div>
+                    <div class="lab-card-content">
+                        <div class="lab-title">Lab 10: Localization in Simulation</div>
+                        <p class="lab-summary">Implement a Bayes Filter and observe it in a robot simulation environment.</p>
+                    </div>
                 </a>
             </article>
             <article class="lab-card">
                 <a href="lab11.html">
-                    <div class="lab-title">Lab 11: Localization in Real Life</div>
-                    <p class="lab-summary">Run the update step with real sensor values to localize robot in real environment.</p>
+                    <div class="lab-cover">
+                        <img src="media/covers/lab11_cover.jpeg" alt="Lab 11 cover">
+                    </div>
+                    <div class="lab-card-content">
+                        <div class="lab-title">Lab 11: Localization in Real Life</div>
+                        <p class="lab-summary">Run the update step with real sensor values to localize robot in real environment.</p>
+                    </div>
                 </a>
             </article>
         </div>
